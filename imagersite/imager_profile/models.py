@@ -1,3 +1,5 @@
+"""Models for imager_profile."""
+
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.encoding import python_2_unicode_compatible
@@ -29,7 +31,12 @@ class ImagerProfile(models.Model):
         on_delete=models.CASCADE
     )
     CAMERA_CHOICES = ('Nikon', 'iPhone', 'Canon'),
-    camera_type = models.CharField(max_length=10, choices=CAMERA_CHOICES, null=True, blank=True),
+    camera_type = models.CharField(
+        max_length=10,
+        choices=CAMERA_CHOICES,
+        null=True,
+        blank=True
+    ),
     address = models.CharField(max_length=40, null=True, blank=True),
     bio = models.TextField(),
     personal_website = models.URLField(),
@@ -42,6 +49,10 @@ class ImagerProfile(models.Model):
     def is_active(self):
         """Return True if user associated with this profile is active."""
         return self._is_active
+
+    def __str__(self):
+        """Display user data as a string."""
+        return "User: {}, Camera: {}, Address: {}, Phone number: {} For Hire? {}, Photography style: {}".format(self.user, self.camera_type, self.address, self.phone_number, self.for_hire, self.photography_type)
 
 
 @receiver(post_save, sender=User)
