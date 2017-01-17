@@ -1,14 +1,27 @@
 from django.db import models
 from django.contrib.auth.models import User
-
+from django.utils.encoding import python_2_unicode_compatible
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
 # Create your models here.
 
 
+class ActiveProfileManager(models.Manager):
+    """Create Model Manager for Active Profiles."""
+
+    def get_queryset(self):
+        """Return active users."""
+        qs = super(ActiveProfileManager, self).get_queryset()
+        return qs.filter(user__is_active__exact=True)
+
+
+@python_2_unicode_compatible
 class ImagerProfile(models.Model):
     """The imager user and all their attributes."""
+
+    objects = models.Manager()
+    active = ActiveProfileManager()
 
     user = models.OneToOneField(
         User,
@@ -16,7 +29,6 @@ class ImagerProfile(models.Model):
         on_delete=models.CASCADE
     )
     CAMERA_CHOICES = ('Nikon', 'iPhone', 'Canon'),
-    ACTIVE = False
     camera_type = models.CharField(max_length=10, choices=CAMERA_CHOICES, null=True, blank=True),
     address = models.CharField(max_length=40, null=True, blank=True),
     bio = models.TextField(),
@@ -25,6 +37,11 @@ class ImagerProfile(models.Model):
     travel_distance = models.IntegerField(null=True, blank=True)
     phone_number = models.CharField(max_length=15, null=True, blank=True)
     photography_type = models.CharField(max_length=20, null=True, blank=True)
+
+    @property
+    def is_active(self):
+        """Return True if user associated with this profile is active."""
+        return self._is_active
 
 
 @receiver(post_save, sender=User)
