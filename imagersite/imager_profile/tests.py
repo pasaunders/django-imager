@@ -4,8 +4,6 @@ from django.contrib.auth.models import User
 from imager_profile.models import ImagerProfile
 import factory
 
-# Create your tests here.
-
 
 class ProfileTestCase(TestCase):
     """The Profile Model test runner."""
@@ -28,23 +26,18 @@ class ProfileTestCase(TestCase):
         self.foo = "bar"
         self.users = [self.UserFactory.create() for i in range(20)]
 
-    def thing_and_stuff(self):
-        self.thing = "stuff"
-
     def test_profile_is_made_when_user_is_saved(self):
-        """."""
-        self.thing_and_stuff()
+        """Test profile is made when user is saved."""
         self.assertTrue(ImagerProfile.objects.count() == 20)
-        self.assertTrue(self.thing == "stuff")
 
     def test_profile_is_associated_with_actual_users(self):
-        """."""
+        """Test profile is associated with actual users."""
         profile = ImagerProfile.objects.first()
         self.assertTrue(hasattr(profile, "user"))
         self.assertIsInstance(profile.user, User)
 
     def test_user_has_profile_attached(self):
-        """."""
+        """Test user has profile attached."""
         user = self.users[0]
         self.assertTrue(hasattr(user, "profile"))
         self.assertIsInstance(user.profile, ImagerProfile)
