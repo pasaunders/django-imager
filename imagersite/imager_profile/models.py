@@ -8,7 +8,7 @@ from django.dispatch import receiver
 # Create your models here.
 
 
-class UserProfile(models.Model):
+class ImagerProfile(models.Model):
     """The imager user and all their attributes."""
 
     user = models.OneToOneField(
