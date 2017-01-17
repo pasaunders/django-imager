@@ -48,7 +48,7 @@ class ImagerProfile(models.Model):
     @property
     def is_active(self):
         """Return True if user associated with this profile is active."""
-        return self._is_active
+        return self.user.is_active
 
     def __str__(self):
         """Display user data as a string."""
