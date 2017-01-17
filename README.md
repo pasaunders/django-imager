@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/pasaunders/django-imager.svg?branch=master)](https://travis-ci.org/pasaunders/django-imager)
 # Django-Imager
 ## Getting Started
 
