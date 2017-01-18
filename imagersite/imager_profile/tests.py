@@ -41,3 +41,10 @@ class ProfileTestCase(TestCase):
         user = self.users[0]
         self.assertTrue(hasattr(user, "profile"))
         self.assertIsInstance(user.profile, ImagerProfile)
+
+    def test_user_model_has_str(self):
+        """Test user has a string method."""
+        user = self.users[0]
+        self.assertIsInstance(str(user), str)
+
+    # def test_user_model_has_attributes(self):
