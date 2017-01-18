@@ -35,6 +35,11 @@ class ImagerProfile(models.Model):
         ('iPhone', 'iPhone'),
         ('Canon', 'Canon')
     ]
+    TYPE_OF_PHOTOGRAPHY = [
+        ('nature', 'nature'),
+        ('urban', 'urban'),
+        ('portraits', 'portraits')
+    ]
     camera_type = models.CharField(
         max_length=10,
         choices=CAMERA_CHOICES,
@@ -47,7 +52,12 @@ class ImagerProfile(models.Model):
     for_hire = models.BooleanField(default=False)
     travel_distance = models.IntegerField(null=True, blank=True)
     phone_number = models.CharField(max_length=15, null=True, blank=True)
-    photography_type = models.CharField(max_length=20, null=True, blank=True)
+    photography_type = models.CharField(
+        max_length=20,
+        choices=TYPE_OF_PHOTOGRAPHY,
+        null=True,
+        blank=True
+    )
 
     @property
     def is_active(self):
