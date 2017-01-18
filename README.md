@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/pasaunders/django-imager.svg?branch=master)](https://travis-ci.org/pasaunders/django-imager)# Django-Imager
+[![Build Status](https://travis-ci.org/pasaunders/django-imager.svg?branch=front-end-1)](https://travis-ci.org/pasaunders/django-imager)
 ## Getting Started
 
 Clone this repository into whatever directory you want to work from.
