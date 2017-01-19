@@ -36,3 +36,6 @@ Finally, run the server in order to server the app on `localhost`
 
 Django will typically serve on port 8000, unless you specify otherwise.
 You can access the locally-served site at the address `http://localhost:8000`.
+
+Resources we used:
+http://stackoverflow.com/questions/10180764/django-auth-login-problems
