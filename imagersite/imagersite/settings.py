@@ -37,7 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django-bootstrap3',
+    'bootstrap3',
     'imager_profile',
     'imagersite'
 ]
@@ -134,3 +134,6 @@ STATIC_URL = '/static/'
 ACCOUNT_ACTIVATION_DAYS = 3
 EMAIL_HOST = '127.0.0.1'
 EMAIL_PORT = 1025
+
+# Login/out settings
+LOGIN_REDIRECT_URL='/'

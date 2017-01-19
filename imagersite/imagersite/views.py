@@ -1,6 +1,6 @@
 """Views."""
 from django.shortcuts import render
-import registration.backends.hmac.views.RegistrationView
+# from registration.backends.hmac.views import RegistrationView
 
 
 def home_view(request):

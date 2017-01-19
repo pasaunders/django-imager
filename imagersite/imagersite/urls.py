@@ -1,4 +1,4 @@
-"""imagersite URL Configuration
+"""imagersite URL Configuration.
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/1.10/topics/http/urls/
@@ -15,7 +15,8 @@ Including another URLconf
 """
 from django.conf.urls import include, url
 from django.contrib import (
-    admin
+    admin,
+    auth
 )
 from imagersite.views import (
     home_view
@@ -24,5 +25,7 @@ from imagersite.views import (
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^$', home_view, name='homepage'),
-    url(r'^accounts/$', include('registration.backends.hmac.urls')),
+    url(r'^accounts/', include('registration.backends.hmac.urls')),
+    url(r'^login/', auth.views.login, name='login'),
+    url(r'^logout/', auth.views.logout, {'next_page': '/'}, name='logout')
 ]
