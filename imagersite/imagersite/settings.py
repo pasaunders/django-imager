@@ -39,7 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'bootstrap3',
     'imager_profile',
-    'imagersite'
+    'imagersite',
+    'imager_images'
 ]
 
 MIDDLEWARE = [
@@ -137,3 +138,5 @@ EMAIL_PORT = 1025
 
 # Login/out settings
 LOGIN_REDIRECT_URL='/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'MEDIA')
+MEDIA_URL = "/media/"
