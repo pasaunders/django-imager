@@ -1,5 +1,5 @@
 """Tests for the imager_profile app."""
-from django.test import TestCase
+from django.test import TestCase, Client, RequestFactory
 from django.contrib.auth.models import User
 from imager_profile.models import ImagerProfile
 import factory
@@ -47,4 +47,23 @@ class ProfileTestCase(TestCase):
         user = self.users[0]
         self.assertIsInstance(str(user), str)
 
-    # def test_user_model_has_attributes(self):
+    def test_user_model_has_attributes(self):
+        """Test user attributes are present."""
+        pass
+
+    def test_active_users_counted(self):
+        """Test acttive user count meets expectations."""
+        self.assertTrue(ImagerProfile.active.count() == User.objects.count())
+
+    def test_inactive_users_not_counted(self):
+        """Test inactive users not included with active users."""
+        deactivated_user = self.users[0]
+        deactivated_user.is_active = False
+        deactivated_user.save()
+        self.assertTrue(ImagerProfile.active.count() == User.objects.count() - 1)
+
+
+
+class frontend_test_cases(TestCase):
+    """Test the frontend of the imager_profile site."""
+    pass
