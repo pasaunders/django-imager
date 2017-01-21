@@ -4,6 +4,13 @@
     <title>App</title>
 </head>
 <body>
-{% block content %}{% endblock %}
+{% if user.is_authenticated %}
+    <a href="{% url 'logout' %}" title="logout">Logout</a>
+    <a href="/profile" title="profile">Your Profile</a>
+{% else %}
+    <a href="/login" title="login">Login</a>
+{% endif %}
+{% block content %}
+{% endblock %}
 </body>
 </html>
