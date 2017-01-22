@@ -15,19 +15,15 @@ def home_view(request):
 @login_required(login_url='/accounts/login/')
 def profile_view(request):
     """The user profile view."""
-    user = {"user": request.user}
-    user['public'] = False
     return render(request,
                   "imagersite/profile.html",
-                  user
+                  {"user": request.user}
                   )
 
 
 def public_profile(request, username):
     """Public profile view."""
-    user = {"user": User.objects.get(username=username)}
-    user['public'] = True
     return render(request,
                   "imagersite/profile.html",
-                  user
+                  {"user": User.objects.get(username=username)}
                   )
