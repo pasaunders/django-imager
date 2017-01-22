@@ -1,4 +1,13 @@
 {% extends 'imagersite/base.html' %}
 {% block content %}
-<h1>Profile Page</h1>
-{% endblock content %}
+<section>
+<h2>Welcome {{user.username}}!</h2>
+<ul>
+    <li>Name: {{user.first_name}} {{user.last_name}}</li>
+    <li>Location: {{user.profile.address}}</li>
+    <li>Camera: {{user.profile.camera_type}}</li>
+    <li>Photos Uploaded: {{user.photos.count}}
+    <li>Albums Created: {{user.albums.count}}
+</ul>
+</section>
+{% endblock %}

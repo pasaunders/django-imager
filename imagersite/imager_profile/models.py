@@ -41,7 +41,7 @@ class ImagerProfile(models.Model):
         null=True,
         blank=True
     )
-    address = models.CharField(max_length=40, null=True, blank=True),
+    address = models.CharField(max_length=40, null=True, blank=True)
     bio = models.TextField(default="")
     personal_website = models.URLField(default="")
     for_hire = models.BooleanField(default=False)

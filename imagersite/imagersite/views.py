@@ -1,6 +1,7 @@
 """Views."""
 from django.shortcuts import render
 # from registration.backends.hmac.views import RegistrationView
+from django.contrib.auth.decorators import login_required
 
 
 def home_view(request):
@@ -10,8 +11,10 @@ def home_view(request):
                   )
 
 
+@login_required(login_url='/accounts/login/')
 def profile_view(request):
     """The user profile view."""
     return render(request,
-                  "imagersite/profile.html"
+                  "imagersite/profile.html",
+                  {"user": request.user}
                   )
