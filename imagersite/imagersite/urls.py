@@ -19,9 +19,7 @@ from django.contrib import (
     auth
 )
 from imagersite.views import (
-    home_view,
-    profile_view,
-    public_profile
+    home_view
 )
 
 urlpatterns = [
@@ -30,6 +28,5 @@ urlpatterns = [
     url(r'^accounts/', include('registration.backends.hmac.urls')),
     url(r'^login/', auth.views.login, name='login'),
     url(r'^logout/', auth.views.logout, {'next_page': '/'}, name='logout'),
-    url(r'^profile/(?P<username>\w+)', public_profile, name='public_profile'),
-    url(r'^profile/', profile_view, name='profile')
+    url(r'^profile/', include('imager_profile.urls'))
 ]
