@@ -48,10 +48,10 @@ class ImagerProfile(models.Model):
     travel_distance = models.IntegerField(null=True, blank=True)
     phone_number = models.CharField(max_length=15, null=True, blank=True)
     STYLE_CHOICES = [
-        ('portrait', 'Portrait'),
-        ('landscape', 'Landscape'),
-        ('bw', 'Black and White'),
-        ('sport', 'Sport')
+        ('Portrait', 'Portrait'),
+        ('Landscape', 'Landscape'),
+        ('Black and White', 'Black and White'),
+        ('Sport', 'Sport')
     ]
     photography_type = models.CharField(
         max_length=20,
