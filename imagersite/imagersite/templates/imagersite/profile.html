@@ -4,6 +4,12 @@
 <h2>Welcome {{user.username}}!</h2>
 <ul>
     <li>Name: {{user.first_name}} {{user.last_name}}</li>
+    <li>Bio: {{user.profile.bio}}</li>
+    <li>Website: {{user.profile.personal_website}}</li>
+    <li>For Hire: {{user.profile.for_hire}}</li>
+    <li>Travel Distance: {{user.profile.travel_distance}} Miles</li>
+    <li>Phone Number: {{user.profile.phone_number}}</li>
+    <li>Photography Type: {{user.profile.photography_type}}</li>
     <li>Location: {{user.profile.address}}</li>
     <li>Camera: {{user.profile.camera_type}}</li>
     <li>Photos Uploaded: {{user.photos.count}}
