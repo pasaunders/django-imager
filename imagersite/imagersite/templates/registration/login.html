@@ -1,15 +1,10 @@
 {% extends 'imagersite/base.html' %}
 {% block content %}
-{% if form.errors %}
-<p>Your Username and password didn't match. Please try again.</p>
-{% endif %}
+{% load bootstrap3 %}
 <form method="post">
+    {% bootstrap_form form %}
     {% csrf_token %}
-    {{ form.username.label_tag }}
-    {{ form.username }}
-    {{ form.password.label_tag }}
-    {{ form.password }}
-    <input type="submit" value="login">
+    {% bootstrap_button "Login" button_type="submit" button_class="btn-primary" %}
     <input type="hidden" name="next" value="/profile/" />
 </form>
 {% endblock content %}
