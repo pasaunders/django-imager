@@ -24,7 +24,6 @@ class ProfileTestCase(TestCase):
 
     def setUp(self):
         """The appropriate setup for the appropriate test."""
-        self.foo = "bar"
         self.users = [UserFactory.create() for i in range(20)]
 
     def test_profile_is_made_when_user_is_saved(self):

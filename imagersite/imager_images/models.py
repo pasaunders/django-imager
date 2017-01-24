@@ -33,7 +33,7 @@ class Photo(models.Model):
     published = models.CharField(max_length=10, choices=PUBLISHED_OPTIONS)
 
     def __str__(self):
-        """Return string description of album."""
+        """Return string description of photo."""
         return "{}: Photo belonging to {}".format(self.title, self.user)
 
 
