@@ -40,7 +40,8 @@ INSTALLED_APPS = [
     'bootstrap3',
     'imager_profile',
     'imagersite',
-    'imager_images'
+    'imager_images',
+    'sorl.thumbnail'
 ]
 
 MIDDLEWARE = [
@@ -140,3 +141,4 @@ EMAIL_PORT = 1025
 LOGIN_REDIRECT_URL='/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'MEDIA')
 MEDIA_URL = "/media/"
+THUMBNAIL_DEBUG = True

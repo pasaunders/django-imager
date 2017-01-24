@@ -2,6 +2,7 @@
 from django.shortcuts import render
 from imager_images.models import Photo, Album
 from django.http import HttpResponse
+from django.contrib.auth.decorators import login_required
 
 
 def photo_view(request, photo_id):
@@ -46,3 +47,13 @@ def all_albums(request):
         'imager_images/albums.html',
         {'albums': public_albums}
     )
+
+
+@login_required(login_url='/accounts/login/')
+def library(request):
+    """Library view."""
+    albums = request.user.albums.all()
+    photos = request.user.photos.all()
+    return render(request,
+                  'imager_images/library.html',
+                  context={'albums': albums, 'photos': photos})
