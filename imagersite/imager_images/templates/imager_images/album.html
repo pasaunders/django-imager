@@ -2,7 +2,7 @@
 {% block content %}
 <h1>Your Album:</h1>
 <div class="galleria" style="height:500px; width: 800px;">
-<img src="{{ album.cover.url }}">
+<img src="{{ album.cover.image.url }}">
 {% for photo in album.photos.all %}
 <img src="{{ photo.image.url }}">
 {% endfor %}
