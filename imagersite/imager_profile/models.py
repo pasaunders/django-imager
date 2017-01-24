@@ -66,7 +66,7 @@ class ImagerProfile(models.Model):
 
     def __str__(self):
         """Display user data as a string."""
-        return "User: {}, Camera: {}, Address: {}, Phone number: {} For Hire? {}, Photography style: {}".format(self.user, self.camera_type, self.address, self.phone_number, self.for_hire, self.photography_type)
+        return "User: {}, Camera: {}, Address: {}, Phone number: {}, For Hire? {}, Photography style: {}".format(self.user, self.camera_type, self.address, self.phone_number, self.for_hire, self.photography_type)
 
 
 @receiver(post_save, sender=User)
