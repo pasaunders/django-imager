@@ -78,8 +78,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': os.environ['IMAGER_DATABASE'],
-        # 'USER': os.environ['DATABASE_USER'],
-        # 'PASSWORD': os.environ['DATABASE_PASSWORD'],
+        'USER': os.environ.get('DATABASE_USER', ''),
+        'PASSWORD': os.environ.get('DATABASE_PASSWORD', ''),
         # 'HOST': '127.0.0.1',
         # 'PORT': '5432',
         'TEST': {
