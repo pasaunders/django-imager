@@ -35,5 +35,19 @@ Finally, run the server in order to server the app on `localhost`
 (django-imager) $ ./manage.py runserver
 ```
 
-Django will typically serve on port 8000, unless you specify otherwise.
-You can access the locally-served site at the address `http://localhost:8000`.
+To start your postgres database
+```{r, engine='bash', count_lines}
+createdb <database name>
+export IMAGER_DATABASE="<database name>"
+export TEST_IMAGER="test"
+```
+or
+
+In **/django-imager/imagersite/imagersite/settings.py** on line 80 replace:
+```python
+'NAME': os.environ['IMAGER_DATABASE'],
+```
+with 
+```python
+'NAME': <database name>,
+```
