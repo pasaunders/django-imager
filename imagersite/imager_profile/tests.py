@@ -16,6 +16,7 @@ class UserFactory(factory.django.DjangoModelFactory):
     username = factory.Sequence(lambda n: "The Chosen {}".format(n))
     email = factory.LazyAttribute(
         lambda x: "{}@foo.com".format(x.username.replace(" ", ""))
+
     )
 
 
@@ -49,7 +50,6 @@ class ProfileTestCase(TestCase):
 
     # def test_user_model_has_attributes(self):
     #     """Test user attributes are present."""
-    #     pass
 
     def test_active_users_counted(self):
         """Test acttive user count meets expectations."""
@@ -92,32 +92,21 @@ class FrontendTestCases(TestCase):
     def test_login_redirect_code(self):
         """Test built-in login route redirects properly."""
         user_register = UserFactory.create()
+        user_register.is_active = True
         user_register.username = "username"
-        user_register.password = "potatoes"
+        user_register.set_password("potatoes")
         user_register.save()
         response = self.client.post("/login/", {
             "username": user_register.username,
             "password": "potatoes"
 
         })
-        self.assertTrue(response.status_code == 302)
-
-    def test_login_redirect_home(self):
-        """Test built-in login route redirects to home."""
-        user_register = UserFactory.create()
-        user_register.username = "username2"
-        user_register.password = "potatoes2"
-        user_register.save()
-        response = self.client.post("/login/", {
-            "username": user_register.username,
-            "password": "potatoes"
-        }, follow=True)
-        self.assertTrue(response.redirect_chain[0][0] == '/')
+        self.assertRedirects(response, '/profile/')
 
     def test_register_user(self):
         """Test that tests can register users."""
         self.assertTrue(User.objects.count() == 0)
-        self.client.post("/registration/register/", {
+        self.client.post("/accounts/register/", {
             "username": "Sir_Joseph",
             "email": "e@mail.com",
             "password1": "rutabega",
@@ -127,7 +116,7 @@ class FrontendTestCases(TestCase):
 
     def test_new_user_inactive(self):
         """Test django-created user starts as inactive."""
-        self.client.post("/registration/register/", {
+        self.client.post("/accounts/register/", {
             "username": "Sir_Joseph",
             "email": "e@mail.com",
             "password1": "rutabega",
@@ -138,7 +127,7 @@ class FrontendTestCases(TestCase):
 
     def test_registration_redirect(self):
         """Test redirect on registration."""
-        response = self.client.post("/registration/register/", {
+        response = self.client.post("/accounts/register/", {
             "username": "Sir_Joseph",
             "email": "e@mail.com",
             "password1": "rutabega",
@@ -148,12 +137,13 @@ class FrontendTestCases(TestCase):
 
     def test_registration_reidrect_home(self):
         """Test registration redirects home."""
-        response = self.client.post("/registration/register/", {
+        response = self.client.post("/accounts/register/", {
             "username": "Sir_Joseph",
             "email": "e@mail.com",
             "password1": "rutabega",
             "password2": "rutabega"
         }, follow=True)
-        self.assertTrue(
-            response.redirect_chain[0][0] == "/registration/register/complete/"
+        self.assertRedirects(
+            response,
+            "/accounts/register/complete/"
         )
