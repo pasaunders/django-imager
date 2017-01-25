@@ -101,7 +101,7 @@ class FrontendTestCases(TestCase):
             "password": "potatoes"
 
         })
-        self.assertRedirects(response, '/profile/')
+        self.assertRedirects(response, '/')
 
     def test_register_user(self):
         """Test that tests can register users."""
