@@ -3,7 +3,7 @@
 <section>
 <h2>Welcome {{user.username}}!</h2>
 <ul>
-    <li>Name: {{user.first_name}} {{user.last_name}}</li>
+    <li>Name: {{user.first_name|title}} {{user.last_name|title}}</li>
     <li>Email: <a href="mailto:{{user.email}}">{{user.email}}</a></li>
     <li>Bio: {{user.profile.bio}}</li>
     <li>Website: <a href="{{user.profile.personal_website}}">{{user.profile.personal_website}}</a></li>
