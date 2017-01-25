@@ -1,9 +1,10 @@
+"""Test the imager_images app."""
 from django.test import TestCase, Client, RequestFactory
 from django.contrib.auth.models import User
+from django.db import models
 from imager_images.models import Photo, Album
 import factory
-
-# Create your tests here.
+from faker import Faker
 
 
 class UserFactory(factory.django.DjangoModelFactory):
@@ -14,7 +15,7 @@ class UserFactory(factory.django.DjangoModelFactory):
 
         model = User
 
-    username = factory.Sequence(lambda n: "The Chosen {}".format(n))
+    username = factory.Sequence(lambda n: "Prisoner number {}".format(n))
     email = factory.LazyAttribute(
         lambda x: "{}@foo.com".format(x.username.replace(" ", ""))
     )
@@ -24,8 +25,23 @@ class PhotoTestCase(TestCase):
     """Photo model and view tests."""
 
     def setUp(self):
-        """Set up users for photo tests."""
+        """The appropriate setup for the appropriate test."""
         self.users = [UserFactory.create() for i in range(20)]
+        for profile in Photo.objects.all():
+            self.fake_photo_attrs(profile)
+
+    def fake_photo_attrs(self, profile):
+        """Build a fake photo."""
+        fake = Faker()
+        profile.image =  # Work this one out
+        profile.title = fake.name()
+        profile.description = fake.paragraph()
+        profile.date_uploaded = models.DateTimeField(auto_now_add=True)
+        profile.date_modified = models.DateTimeField(auto_now=True)
+        profile.date_published = fake.date()
+        profile.published = fake.boolean()
+        profile.save()
+
         """
         To test:
         photo model is built
@@ -39,8 +55,23 @@ class AlbumTestCase(TestCase):
     """Album model and view tests."""
 
     def setUp(self):
-        """Set up users for photo tests."""
+        """The appropriate setup for the appropriate test."""
         self.users = [UserFactory.create() for i in range(20)]
+        for profile in Album.objects.all():
+            self.fake_album_attrs(profile)
+
+    def fake_profile_attrs(self, profile):
+        """Build a fake album."""
+        fake = Faker()
+        profile.cover =
+        profile.title =
+        profile.description =
+        profile.photos =
+        profile.date_created = models.DateTimeField(auto_now_add=True)
+        profile.date_modified = models.DateTimeField(auto_now=True)
+        profile.date_published = fake.date()
+        profile.published = fake.boolean()
+        profile.save()
 
     """
     To test:
@@ -56,8 +87,9 @@ class FrontEndTestCase(TestCase):
     """Front end tests."""
 
     def setUp(self):
-        """Set up users for front end tests."""
-        self.users = [UserFactory.create() for i in range(20)]
+        """Set up client and requestfactory."""
+        self.client = Client()
+        self.request = RequestFactory()
 
     """
     To test:

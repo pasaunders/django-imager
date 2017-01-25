@@ -41,12 +41,12 @@ class ImagerProfile(models.Model):
         null=True,
         blank=True
     )
-    address = models.CharField(max_length=40, null=True, blank=True)
+    address = models.CharField(max_length=70, null=True, blank=True)
     bio = models.TextField(default="")
     personal_website = models.URLField(default="")
     for_hire = models.BooleanField(default=False)
     travel_distance = models.IntegerField(null=True, blank=True)
-    phone_number = models.CharField(max_length=15, null=True, blank=True)
+    phone_number = models.CharField(max_length=20, null=True, blank=True)
     STYLE_CHOICES = [
         ('Portrait', 'Portrait'),
         ('Landscape', 'Landscape'),

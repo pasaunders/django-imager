@@ -3,6 +3,7 @@ from django.test import TestCase, Client, RequestFactory
 from django.contrib.auth.models import User
 from imager_profile.models import ImagerProfile
 import factory
+from faker import Faker
 
 
 class UserFactory(factory.django.DjangoModelFactory):
@@ -13,7 +14,7 @@ class UserFactory(factory.django.DjangoModelFactory):
 
         model = User
 
-    username = factory.Sequence(lambda n: "The Chosen {}".format(n))
+    username = factory.Sequence(lambda n: "Prisoner number {}".format(n))
     email = factory.LazyAttribute(
         lambda x: "{}@foo.com".format(x.username.replace(" ", ""))
 
@@ -26,6 +27,20 @@ class ProfileTestCase(TestCase):
     def setUp(self):
         """The appropriate setup for the appropriate test."""
         self.users = [UserFactory.create() for i in range(20)]
+        for profile in ImagerProfile.objects.all():
+            self.fake_profile_attrs(profile)
+
+    def fake_profile_attrs(self, profile):
+        """Build a fake user."""
+        fake = Faker()
+        profile.address = fake.street_name()
+        profile.bio = fake.paragraph()
+        profile.personal_website = fake.url()
+        profile.for_hire = fake.boolean()
+        profile.travel_distance = fake.random_int()
+        profile.phone_number = fake.phone_number()
+        profile.photography_type = 'Nikon'
+        profile.save()
 
     def test_profile_is_made_when_user_is_saved(self):
         """Test profile is made when user is saved."""
@@ -48,8 +63,14 @@ class ProfileTestCase(TestCase):
         user = self.users[0]
         self.assertIsInstance(str(user), str)
 
-    # def test_user_model_has_attributes(self):
+    def test_user_model_has_attributes(self):
+        """Test user attributes are present."""
+        user = User.objects.get(pk=self.users[0].id)
+        self.assertTrue(user.profile.bio)
+
+    # def test_user_model_has_attributes(self):   add more of these!
     #     """Test user attributes are present."""
+    #     user = User.objects.get(pk=self.users[0].id)
 
     def test_active_users_counted(self):
         """Test acttive user count meets expectations."""
