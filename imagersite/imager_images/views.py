@@ -1,9 +1,7 @@
 """Views for images."""
-from django.shortcuts import render
 from imager_images.models import Photo, Album
 from django.http import HttpResponse
-from django.contrib.auth.decorators import login_required
-from django.views.generic import ListView
+from django.views.generic import ListView, TemplateView
 
 
 class PhotoView(ListView):
@@ -20,10 +18,9 @@ class PhotoView(ListView):
         return HttpResponse('Unauthorized', status=401)
 
 
-class PhotosView(ListView):
+class PhotosView(TemplateView):
     """Photos View."""
 
-    model = Photo
     template_name = "imager_images/photos.html"
 
     def get_context_data(self):
@@ -50,10 +47,9 @@ class AlbumView(ListView):
         return HttpResponse('Unauthorized', status=401)
 
 
-class AlbumsView(ListView):
+class AlbumsView(TemplateView):
     """Albums View."""
 
-    model = Album
     template_name = "imager_images/albums.html"
 
     def get_context_data(self):
@@ -66,11 +62,13 @@ class AlbumsView(ListView):
         return {'albums': public_albums}
 
 
-@login_required(login_url='/accounts/login/')
-def library(request):
-    """Library view."""
-    albums = request.user.albums.all()
-    photos = request.user.photos.all()
-    return render(request,
-                  'imager_images/library.html',
-                  context={'albums': albums, 'photos': photos})
+class Library(TemplateView):
+    """Library View."""
+
+    template_name = "imager_images/library.html"
+
+    def get_context_data(self):
+        """Return albums."""
+        albums = self.request.user.albums.all()
+        photos = self.request.user.photos.all()
+        return {'albums': albums, 'photos': photos}
