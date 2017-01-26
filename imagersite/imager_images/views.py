@@ -3,24 +3,37 @@ from django.shortcuts import render
 from imager_images.models import Photo, Album
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
+from django.views.generic import ListView
 
 
-def photo_view(request, photo_id):
-    """Render individual image by id."""
-    photo = Photo.objects.get(id=photo_id)
-    if photo.published != 'private' or photo.user.username == request.user.username:
-        return render(request, 'imager_images/photo.html', {"photo": photo})
-    return HttpResponse('Unauthorized', status=401)
+class PhotoView(ListView):
+    """Photo View."""
+
+    model = Photo
+    template_name = "imager_images/photo.html"
+
+    def get_context_data(self):
+        """Return photo."""
+        photo = Photo.objects.get(id=self.kwargs['photo_id'])
+        if photo.published != 'private' or photo.user.username == self.request.user.username:
+            return {"photo": photo}
+        return HttpResponse('Unauthorized', status=401)
 
 
-def all_photos(request):
-    """Render all photos in app."""
-    public_photos = []
-    photos = Photo.objects.all()
-    for photo in photos:
-        if photo.published != 'private' or photo.user.username == request.user.username:
-            public_photos.append(photo)
-    return render(request, 'imager_images/photos.html', {"photos": public_photos})
+class PhotosView(ListView):
+    """Photo View."""
+
+    model = Photo
+    template_name = "imager_images/photos.html"
+
+    def get_context_data(self):
+        """Return photo."""
+        public_photos = []
+        photos = Photo.objects.all()
+        for photo in photos:
+            if photo.published != 'private' or photo.user.username == request.user.username:
+                public_photos.append(photo)
+        return {"photos": public_photos}
 
 
 def single_album(request, album_id):
