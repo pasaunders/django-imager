@@ -1,8 +1,9 @@
 """Profile urls."""
 from django.conf.urls import url
-from .views import public_profile, profile_view
+from .views import Profile, PublicProfile
+from django.contrib.auth.decorators import login_required
 
 urlpatterns = [
-    url(r'^(?P<username>\w+)', public_profile, name='public_profile'),
-    url(r'^$', profile_view, name='private_profile')
+    url(r'^(?P<username>\w+)', PublicProfile.as_view(), name='public_profile'),
+    url(r'^$', login_required(Profile.as_view()), name='private_profile')
 ]

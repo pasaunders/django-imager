@@ -1,21 +1,23 @@
 """Profile views."""
-from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.views.generic import ListView
+
+PROFILE_TEMPLATE_PATH = "imager_profile/profile.html"
 
 
-@login_required(login_url='/accounts/login/')
-def profile_view(request):
+class Profile(ListView):
     """The user profile view."""
-    return render(request,
-                  "imager_profile/profile.html",
-                  {"user": request.user}
-                  )
+
+    model = User
+    template_name = PROFILE_TEMPLATE_PATH
 
 
-def public_profile(request, username):
+class PublicProfile(ListView):
     """Public profile view."""
-    return render(request,
-                  "imager_profile/profile.html",
-                  {"user": User.objects.get(username=username)}
-                  )
+
+    model = User
+    template_name = PROFILE_TEMPLATE_PATH
+
+    def get_context_data(self):
+        """Return user object."""
+        return {"user": User.objects.get(username=self.kwargs['username'])}
