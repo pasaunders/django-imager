@@ -1,9 +1,8 @@
 """Views for images."""
 from imager_images.models import Photo, Album
 from django.http import HttpResponse
-from django.views.generic import ListView, TemplateView, CreateView
+from django.views.generic import ListView, TemplateView, CreateView, UpdateView
 from django.urls import reverse_lazy
-from django.urls import reverse
 
 
 class PhotoView(ListView):
@@ -90,6 +89,15 @@ class AddAlbum(CreateView):
         return super(AddAlbum, self).form_valid(form)
 
 
+class EditAlbum(UpdateView):
+    """Add Album."""
+
+    template_name = "imager_images/add_album.html"
+    model = Album
+    fields = ['title', "cover", "description", "photos", "published", "date_published"]
+    success_url = reverse_lazy('library')
+
+
 class AddPhoto(CreateView):
     """Add a photo."""
 
@@ -102,3 +110,12 @@ class AddPhoto(CreateView):
         """Make the form user instance the current user."""
         form.instance.user = self.request.user
         return super(AddPhoto, self).form_valid(form)
+
+
+class EditPhoto(UpdateView):
+    """Add a photo."""
+
+    template_name = "imager_images/add_photo.html"
+    model = Photo
+    fields = ['image', 'title', 'description', 'date_published', 'published']
+    success_url = reverse_lazy('library')

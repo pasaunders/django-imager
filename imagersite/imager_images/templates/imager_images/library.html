@@ -13,7 +13,7 @@
 {% endfor %}
 <h3>Images</h3>
 {% for photo in photos %}
-<a href="{% url 'public_profile' photo.id %}">
+<a href="{% url 'photo' photo.id %}">
 {% thumbnail photo.image "200x200" crop="center" as im %}
     <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
 {% endthumbnail %}
