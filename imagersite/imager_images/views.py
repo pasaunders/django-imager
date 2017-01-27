@@ -102,3 +102,8 @@ class AddPhoto(CreateView):
     model = Photo
     fields = ['image', 'title', 'description', 'date_published', 'published']
     success_url = reverse_lazy('library')
+
+    def form_valid(self, form):
+        """Make the form user instance the current user."""
+        form.instance.user = self.request.user
+        return super(AddPhoto, self).form_valid(form)

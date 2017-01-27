@@ -1,7 +1,7 @@
 {% extends 'imagersite/base.html' %}
 {% block content %}
 {% load bootstrap3 %}
-<form method="POST">
+<form method="POST" enctype="multipart/form-data">
     {% bootstrap_form form %}
     {% csrf_token %}
     {% bootstrap_button "Add" button_type="submit" button_class="btn-primary" %}
