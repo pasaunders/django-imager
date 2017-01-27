@@ -33,7 +33,8 @@ class ImagerProfile(models.Model):
     CAMERA_CHOICES = [
         ('Nikon', 'Nikon'),
         ('iPhone', 'iPhone'),
-        ('Canon', 'Canon')
+        ('Canon', 'Canon'),
+        ('--------', '--------')
     ]
     TYPE_OF_PHOTOGRAPHY = [
         ('nature', 'nature'),
@@ -43,21 +44,16 @@ class ImagerProfile(models.Model):
     camera_type = models.CharField(
         max_length=10,
         choices=CAMERA_CHOICES,
-        null=True,
-        blank=True
+        blank=True,
+        default='--------'
     )
-    address = models.CharField(max_length=40, null=True, blank=True)
+    address = models.CharField(default="", max_length=70, null=True, blank=True)
     bio = models.TextField(default="")
     personal_website = models.URLField(default="")
     for_hire = models.BooleanField(default=False)
-    travel_distance = models.IntegerField(null=True, blank=True)
-    phone_number = models.CharField(max_length=15, null=True, blank=True)
-    photography_type = models.CharField(
-        max_length=20,
-        choices=TYPE_OF_PHOTOGRAPHY,
-        null=True,
-        blank=True
-    )
+    travel_distance = models.IntegerField(default=0, blank=True)
+    phone_number = models.CharField(max_length=15, default="", blank=True)
+    photography_type = models.CharField(max_length=20, default="", blank=True)
 
     @property
     def is_active(self):
