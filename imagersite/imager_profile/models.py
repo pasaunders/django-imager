@@ -33,21 +33,27 @@ class ImagerProfile(models.Model):
     CAMERA_CHOICES = [
         ('Nikon', 'Nikon'),
         ('iPhone', 'iPhone'),
-        ('Canon', 'Canon')
+        ('Canon', 'Canon'),
+        ('--------', '--------')
+    ]
+    TYPE_OF_PHOTOGRAPHY = [
+        ('nature', 'nature'),
+        ('urban', 'urban'),
+        ('portraits', 'portraits')
     ]
     camera_type = models.CharField(
         max_length=10,
         choices=CAMERA_CHOICES,
-        null=True,
-        blank=True
+        blank=True,
+        default='--------'
     )
-    address = models.CharField(max_length=40, null=True, blank=True),
+    address = models.CharField(default="", max_length=70, null=True, blank=True)
     bio = models.TextField(default="")
     personal_website = models.URLField(default="")
     for_hire = models.BooleanField(default=False)
-    travel_distance = models.IntegerField(null=True, blank=True)
-    phone_number = models.CharField(max_length=15, null=True, blank=True)
-    photography_type = models.CharField(max_length=20, null=True, blank=True)
+    travel_distance = models.IntegerField(default=0, blank=True)
+    phone_number = models.CharField(max_length=15, default="", blank=True)
+    photography_type = models.CharField(max_length=20, default="", blank=True)
 
     @property
     def is_active(self):
@@ -56,7 +62,7 @@ class ImagerProfile(models.Model):
 
     def __str__(self):
         """Display user data as a string."""
-        return "User: {}, Camera: {}, Address: {}, Phone number: {} For Hire? {}, Photography style: {}".format(self.user, self.camera_type, self.address, self.phone_number, self.for_hire, self.photography_type)
+        return "User: {}, Camera: {}, Address: {}, Phone number: {}, For Hire? {}, Photography style: {}".format(self.user, self.camera_type, self.address, self.phone_number, self.for_hire, self.photography_type)
 
 
 @receiver(post_save, sender=User)
