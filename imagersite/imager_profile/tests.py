@@ -160,3 +160,17 @@ class FrontendTestCases(TestCase):
             response,
             "/accounts/register/complete/"
         )
+
+    def test_logout_redirects_to_home(self):
+        """Test logging out redirects to home."""
+        user_register = UserFactory.create()
+        user_register.is_active = True
+        user_register.username = "username"
+        user_register.set_password("potatoes")
+        user_register.save()
+        self.client.post("/login/", {
+            "username": user_register.username,
+            "password": "potatoes"
+        })
+        response = self.client.get('/logout/')
+        self.assertRedirects(response, '/')
