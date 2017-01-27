@@ -28,6 +28,7 @@ lib64
 pyvenv.cfg
 share/
 pip-selfcheck.json
+MEDIA/
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
