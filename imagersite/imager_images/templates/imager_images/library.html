@@ -2,7 +2,7 @@
 {% load thumbnail %}
 {% block content %}
 <section>
-<h2>{{user.first_name|title}}'s Library</h2>
+<h2>{{user.username|title}}'s Library</h2>
 <h3>Albums:</h3>
 {% for album in albums %}
 <a href="albums/{{ album.id }}" title="">

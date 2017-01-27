@@ -1,7 +1,8 @@
 """Views for images."""
 from imager_images.models import Photo, Album
 from django.http import HttpResponse
-from django.views.generic import ListView, TemplateView
+from django.views.generic import ListView, TemplateView, CreateView
+from django.urls import reverse_lazy
 
 
 class PhotoView(ListView):
@@ -28,7 +29,7 @@ class PhotosView(TemplateView):
         public_photos = []
         photos = Photo.objects.all()
         for photo in photos:
-            if photo.published != 'private' or photo.user.username == request.user.username:
+            if photo.published != 'private' or photo.user.username == self.request.user.username:
                 public_photos.append(photo)
         return {"photos": public_photos}
 
@@ -72,3 +73,21 @@ class Library(TemplateView):
         albums = self.request.user.albums.all()
         photos = self.request.user.photos.all()
         return {'albums': albums, 'photos': photos}
+
+
+class AddAlbum(CreateView):
+    """Add Album."""
+
+    template_name = "imager_images/add_album.html"
+    model = Album
+    fields = ['title', "cover", "description", "photos", "published", "date_published"]
+    success_url = reverse_lazy('library')
+
+
+class AddPhoto(CreateView):
+    """Add a photo."""
+
+    template_name = "imager_images/add_photo.html"
+    model = Photo
+    fields = ['image', 'title', 'description', 'date_published', 'published']
+    success_url = reverse_lazy('library')

@@ -39,3 +39,6 @@ You can access the locally-served site at the address `http://localhost:8000`.
 
 Resources we used:
 http://stackoverflow.com/questions/10180764/django-auth-login-problems
+
+library template requires:
+pip install -e git+https://github.com/mariocesar/sorl-thumbnail.git#egg=sorl-thumbnail
