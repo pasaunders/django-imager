@@ -102,6 +102,18 @@ class FrontendTestCases(TestCase):
         self.assertTemplateUsed(response, "imagersite/base.html")
         self.assertTemplateUsed(response, "imagersite/home.html")
 
+    def test_login_template(self):
+        """Test the login route templates are correct."""
+        response = self.client.get("/login/")
+        self.assertTemplateUsed(response, "imagersite/base.html")
+        self.assertTemplateUsed(response, "registration/login.html")
+
+    def test_registration_template(self):
+        """Test the login route templates are correct."""
+        response = self.client.get("/accounts/register/")
+        self.assertTemplateUsed(response, "imagersite/base.html")
+        self.assertTemplateUsed(response, "registration/registration_form.html")
+
     def test_login_redirect_code(self):
         """Test built-in login route redirects properly."""
         user_register = UserFactory.create()
