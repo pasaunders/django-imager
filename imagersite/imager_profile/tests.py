@@ -48,9 +48,6 @@ class ProfileTestCase(TestCase):
         user = self.users[0]
         self.assertIsInstance(str(user), str)
 
-    # def test_user_model_has_attributes(self):
-    #     """Test user attributes are present."""
-
     def test_active_users_counted(self):
         """Test acttive user count meets expectations."""
         self.assertTrue(ImagerProfile.active.count() == User.objects.count())
@@ -61,6 +58,22 @@ class ProfileTestCase(TestCase):
         deactivated_user.is_active = False
         deactivated_user.save()
         self.assertTrue(ImagerProfile.active.count() == User.objects.count() - 1)
+
+    def test_imagerprofile_attributes(self):
+        """Test that ImagerProfile has the expected attributes."""
+        attribute_list = ["user", "camera_type", "address", "bio", "personal_website", "for_hire", "travel_distance", "phone_number", "photography_type"]
+        for item in attribute_list:
+            self.assertTrue(hasattr(ImagerProfile, item))
+
+    def test_field_type(self):
+        """Test user field types."""
+        attribute_list = ["camera_type", "address", "bio", "personal_website", "for_hire", "travel_distance", "phone_number", "photography_type"]
+        field_list = [str, str, str, str, bool, int, str, str]
+        test_user = self.users[0]
+        # import pdb; pdb.set_trace()
+        self.assertIsInstance(test_user.username, str)
+        for attribute, field in zip(attribute_list, field_list):
+            self.assertIsInstance(getattr(test_user.profile, attribute), field)
 
 
 class FrontendTestCases(TestCase):
