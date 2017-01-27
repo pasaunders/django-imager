@@ -82,17 +82,12 @@ class AddAlbum(CreateView):
     template_name = "imager_images/add_album.html"
     model = Album
     fields = ['title', "cover", "description", "photos", "published", "date_published"]
+    success_url = reverse_lazy('library')
 
     def form_valid(self, form):
         """Make the form user instance the current user."""
         form.instance.user = self.request.user
         return super(AddAlbum, self).form_valid(form)
-
-    def get_success_url(self):
-        """Save and redirects to library."""
-        self.object.user = self.request.user
-        self.object.save()
-        return reverse('library')
 
 
 class AddPhoto(CreateView):
