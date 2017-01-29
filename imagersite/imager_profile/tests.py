@@ -9,7 +9,7 @@ class UserFactory(factory.django.DjangoModelFactory):
     """Makes users."""
 
     class Meta:
-        """Meta."""
+        """Metadata for UserFactory."""
 
         model = User
 
