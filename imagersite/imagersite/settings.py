@@ -137,6 +137,6 @@ EMAIL_HOST = '127.0.0.1'
 EMAIL_PORT = 1025
 
 # Login/out settings
-LOGIN_REDIRECT_URL='/'
+LOGIN_REDIRECT_URL = '/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'MEDIA')
 MEDIA_URL = "/media/"
