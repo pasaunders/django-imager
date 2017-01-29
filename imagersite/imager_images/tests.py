@@ -68,11 +68,12 @@ class PhotoTestCase(TestCase):
     def test_photo_associated_with_user(self):
         """Test that a photo is attached to a user."""
         photo = Photo.objects.first()
-        self.assertTrue(hasattr(photo, "user"))
-        self.assertIsInstance(photo.user, User)
+        self.assertTrue(hasattr(photo, "__str__"))
 
     def test_photo_has_str(self):
         """Test photo model includes string method."""
+        photo = Photo.objects.first()
+        self.assertTrue(hasattr(photo, "user"))
 
     def test_image_title(self):
         """Test that the image has a title."""
