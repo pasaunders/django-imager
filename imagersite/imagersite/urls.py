@@ -18,6 +18,8 @@ from django.contrib import (
     admin,
     auth
 )
+from django.conf import settings
+from django.conf.urls.static import static
 from imagersite.views import (
     home_view
 )
@@ -28,4 +30,4 @@ urlpatterns = [
     url(r'^accounts/', include('registration.backends.hmac.urls')),
     url(r'^login/', auth.views.login, name='login'),
     url(r'^logout/', auth.views.logout, {'next_page': '/'}, name='logout')
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
