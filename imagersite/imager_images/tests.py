@@ -41,6 +41,7 @@ class AlbumFacotory(factory.django.DjangoModelFactory):
 
         model = Album
 
+    user = factory.SubFactory(UserFactory)
     title = factory.Sequence(lambda n: "Album number {}".format(n))
     description = factory.LazyAttribute(lambda a: '{} is an album'.format(a.title))
 
@@ -52,14 +53,6 @@ class PhotoTestCase(TestCase):
         """The appropriate setup for the appropriate test."""
         self.users = [UserFactory.create() for i in range(20)]
         self.photos = [PhotoFactory.create() for i in range(20)]
-
-        """
-        To test:
-        photo model is built
-        photos are associated with users
-        assigning values to photo attributes
-        presence of string method
-        """
 
     def test_photo_made_when_saved(self):
         """Test photos are added to the database."""
@@ -146,16 +139,125 @@ class AlbumTestCase(TestCase):
         """The appropriate setup for the appropriate test."""
         self.users = [UserFactory.create() for i in range(20)]
         self.photos = [PhotoFactory.create() for i in range(20)]
-        self.album = [AlbumFacotory.create() for i in range(20)]
+        self.albums = [AlbumFacotory.create() for i in range(20)]
 
-    """
-    To test:
-        album model is built
-        albums are associated with users
-        assigning values to album attributes
-        presence of string method
-        photo creation and modified date/times are now
-    """
+    def test_image_has_no_album(self):
+        """Test that the image is in an album."""
+        image = Photo.objects.first()
+        self.assertTrue(image.albums.count() == 0)
+
+    def test_image_has_album(self):
+        """Test that the image is in an album."""
+        image = Photo.objects.first()
+        album = Album.objects.first()
+        image.albums.add(album)
+        self.assertTrue(image.albums.count() == 1)
+
+    def test_album_has_no_image(self):
+        """Test that an album has no image before assignemnt."""
+        album = Album.objects.first()
+        self.assertTrue(album.photos.count() == 0)
+
+    def test_album_has_image(self):
+        """Test that an album has an image after assignemnt."""
+        image = Photo.objects.first()
+        album = Album.objects.first()
+        image.albums.add(album)
+        self.assertTrue(image.albums.count() == 1)
+
+    def test_two_images_have_album(self):
+        """Test that two images have same album."""
+        image1 = Photo.objects.all()[0]
+        image2 = Photo.objects.all()[1]
+        album = Album.objects.first()
+        image1.albums.add(album)
+        image2.albums.add(album)
+        image1.save()
+        image2.save()
+        self.assertTrue(image1.albums.all()[0] == album)
+        self.assertTrue(image2.albums.all()[0] == album)
+
+    def test_album_has_two_images(self):
+        """Test that an album has two images."""
+        image1 = Photo.objects.all()[0]
+        image2 = Photo.objects.all()[1]
+        album = Album.objects.first()
+        image1.albums.add(album)
+        image2.albums.add(album)
+        image1.save()
+        image2.save()
+        self.assertTrue(album.photos.count() == 2)
+
+    def test_image_has_two_albums(self):
+        """Test that an image has two albums."""
+        image = Photo.objects.first()
+        album1 = Album.objects.all()[0]
+        album2 = Album.objects.all()[1]
+        image.albums.add(album1)
+        image.albums.add(album2)
+        image.save()
+        self.assertTrue(image.albums.count() == 2)
+
+    def test_album_title(self):
+        """Test that the album has a title."""
+        self.assertTrue("Album" in Album.objects.first().title)
+
+    def test_album_has_description(self):
+        """Test that the album description field exists."""
+        self.assertTrue("is an album" in Album.objects.first().description)
+
+    def test_album_has_published(self):
+        """Test that the album published field exists."""
+        album = Album.objects.first()
+        album.published = 'public'
+        album.save()
+        self.assertTrue(Album.objects.first().published == "public")
+
+    def test_album_has_user(self):
+        """Test that album has an user."""
+        self.assertTrue(Album.objects.first().user)
+
+    def test_user_has_album(self):
+        """Test that the user has the album."""
+        album = Album.objects.first()
+        user = User.objects.first()
+        self.assertTrue(user.albums.count() == 0)
+        album.user = user
+        album.save()
+        self.assertTrue(user.albums.count() == 1)
+
+    def test_two_albums_have_user(self):
+        """Test two albums have the same user."""
+        album1 = Album.objects.all()[0]
+        album2 = Album.objects.all()[1]
+        user = User.objects.first()
+        album1.user = user
+        album2.user = user
+        album1.save()
+        album2.save()
+        self.assertTrue(album1.user == user)
+        self.assertTrue(album2.user == user)
+
+    def test_user_has_two_albums(self):
+        """Test that user has two albums."""
+        album1 = Album.objects.all()[0]
+        album2 = Album.objects.all()[1]
+        user = User.objects.first()
+        album1.user = user
+        album2.user = user
+        album1.save()
+        album2.save()
+        self.assertTrue(user.albums.count() == 2)
+
+    def test_adding_cover_image(self):
+        """Test that the image is in an album."""
+        image = Photo.objects.first()
+        album = Album.objects.first()
+        # import ipdb; ipdb.set_trace()
+        self.assertTrue(album.cover is None)
+        album.cover = image
+        album.save()
+        self.assertTrue(Album.objects.first().cover is not None)
 
 
 class FrontEndTestCase(TestCase):
