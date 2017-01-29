@@ -24,13 +24,13 @@ class Photo(models.Model):
         related_name='photos',
         on_delete=models.CASCADE,
     )
-    image = models.ImageField(upload_to=image_path)
+    image = models.ImageField(upload_to=image_path, blank=True, null=True)
     title = models.CharField(max_length=60)
-    description = models.TextField(max_length=120)
-    date_uploaded = models.DateTimeField(auto_now_add=True)
-    date_modified = models.DateTimeField(auto_now=True)
-    date_published = models.DateTimeField(null=True)
-    published = models.CharField(max_length=10, choices=PUBLISHED_OPTIONS)
+    description = models.TextField(max_length=120, blank=True, null=True)
+    date_uploaded = models.DateTimeField(auto_now_add=True, blank=True, null=True)
+    date_modified = models.DateTimeField(auto_now=True, blank=True, null=True)
+    date_published = models.DateTimeField(null=True, blank=True)
+    published = models.CharField(max_length=10, choices=PUBLISHED_OPTIONS, default='public')
 
     def __str__(self):
         """Return string description of album."""
@@ -60,8 +60,8 @@ class Album(models.Model):
     )
     date_created = models.DateTimeField(auto_now_add=True)
     date_modified = models.DateTimeField(auto_now=True)
-    date_published = models.DateTimeField(null=True)
-    published = models.CharField(max_length=10, choices=PUBLISHED_OPTIONS)
+    date_published = models.DateTimeField(null=True, blank=True)
+    published = models.CharField(max_length=10, choices=PUBLISHED_OPTIONS, default="public")
 
     def __str__(self):
         """Return String Representation of Album."""
