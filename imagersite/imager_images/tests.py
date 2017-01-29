@@ -3,7 +3,6 @@ from django.test import TestCase, Client, RequestFactory
 from django.contrib.auth.models import User
 from django.db import models
 from imager_images.models import Photo, Album
-from django.core.files.uploadedfile import SimpleUploadedFile
 import factory
 
 
@@ -42,7 +41,7 @@ class AlbumFacotory(factory.django.DjangoModelFactory):
         model = Album
 
     title = factory.Sequence(lambda n: "Album number {}".format(n))
-    description = factory.LazyAttribute(lambda a: '{} is a photo'.format(a.title))
+    description = factory.LazyAttribute(lambda a: '{} is an album'.format(a.title))
 
 
 class PhotoTestCase(TestCase):
@@ -51,7 +50,7 @@ class PhotoTestCase(TestCase):
     def setUp(self):
         """The appropriate setup for the appropriate test."""
         self.users = [UserFactory.create() for i in range(20)]
-        self.photos = [PhotoFactory.create() for i in range(5)]
+        self.photos = [PhotoFactory.create() for i in range(20)]
 
         """
         To test:
@@ -81,8 +80,8 @@ class AlbumTestCase(TestCase):
     def setUp(self):
         """The appropriate setup for the appropriate test."""
         self.users = [UserFactory.create() for i in range(20)]
-        for profile in Album.objects.all():
-            self.fake_album_attrs(profile)
+        self.photos = [PhotoFactory.create() for i in range(20)]
+        self.album = [AlbumFacotory.create() for i in range(20)]
 
     """
     To test:
