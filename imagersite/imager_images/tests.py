@@ -388,3 +388,17 @@ class FrontEndTestCase(TestCase):
         response = self.client.get(reverse_lazy('single_album',
                                                 kwargs={'album_id': album.id}))
         self.assertTrue('is an album' in response.content.decode())
+
+    def test_description_of_photo_shows(self):
+        """Test that the description of an photo shows."""
+        photo = self.photos[17]
+        image = SimpleUploadedFile(
+            name='test_image.jpg',
+            content=open('imager_images/test_img.jpg', 'rb').read(),
+            content_type='image/jpeg'
+        )
+        photo.image = image
+        photo.save()
+        response = self.client.get(reverse_lazy('single_photo',
+                                                kwargs={'photo_id': photo.id}))
+        self.assertTrue('is a photo' in response.content.decode())
