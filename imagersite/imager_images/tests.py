@@ -324,7 +324,7 @@ class FrontEndTestCase(TestCase):
         )
         photo.image = image
         photo.save()
-        response = self.client.get(reverse_lazy('public_profile',
+        response = self.client.get(reverse_lazy('single_photo',
                                                 kwargs={'photo_id': photo.id}))
         self.assertTrue(response.status_code == 200)
 
@@ -339,7 +339,7 @@ class FrontEndTestCase(TestCase):
         )
         photo.image = image
         photo.save()
-        response = self.client.get(reverse_lazy('public_profile',
+        response = self.client.get(reverse_lazy('single_photo',
                                                 kwargs={'photo_id': photo.id}))
         self.assertTrue(response.status_code == 401)
 
@@ -358,7 +358,7 @@ class FrontEndTestCase(TestCase):
         )
         photo.image = image
         photo.save()
-        response = self.client.get(reverse_lazy('public_profile',
+        response = self.client.get(reverse_lazy('single_photo',
                                                 kwargs={'photo_id': photo.id}))
         self.assertTrue(response.status_code == 200)
 
