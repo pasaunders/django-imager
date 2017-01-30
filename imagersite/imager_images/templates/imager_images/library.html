@@ -6,6 +6,7 @@
 <h3>Albums:</h3>
 {% for album in albums %}
 <a href="albums/{{ album.id }}" title="">
+<h3>{{ album.title }}</h3>
 {% thumbnail album.cover.image "200x200" crop="center" as im %}
 <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
 {% endthumbnail %}
@@ -14,11 +15,11 @@
 <h3>Images</h3>
 {% for photo in photos %}
 <a href="{% url 'public_profile' photo.id %}">
+<h3>{{ photo.title }}</h3>
 {% thumbnail photo.image "200x200" crop="center" as im %}
     <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
 {% endthumbnail %}
 </a>
-{{photo.title}}
 {% endfor %}
 </section>
 {% endblock content %}
