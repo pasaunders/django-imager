@@ -381,3 +381,10 @@ class FrontEndTestCase(TestCase):
         response = self.client.get(reverse_lazy('single_album',
                                                 kwargs={'album_id': album.id}))
         self.assertTrue(response.status_code == 401)
+
+    def test_description_of_album_shows(self):
+        """Test that the description of an album shows."""
+        album = self.albums[17]
+        response = self.client.get(reverse_lazy('single_album',
+                                                kwargs={'album_id': album.id}))
+        self.assertTrue('is an album' in response.content.decode())
