@@ -4,6 +4,8 @@ from django.contrib.auth.models import User
 from django.core.files.uploadedfile import SimpleUploadedFile
 from imager_images.models import Photo, Album
 import factory
+from django.core.urlresolvers import reverse_lazy
+from .views import photo_view, all_photos, single_album, all_albums, library
 
 
 class UserFactory(factory.django.DjangoModelFactory):
@@ -253,7 +255,6 @@ class AlbumTestCase(TestCase):
         """Test that the image is in an album."""
         image = Photo.objects.first()
         album = Album.objects.first()
-        # import ipdb; ipdb.set_trace()
         self.assertTrue(album.cover is None)
         album.cover = image
         album.save()
@@ -267,6 +268,9 @@ class FrontEndTestCase(TestCase):
         """Set up client and requestfactory."""
         self.client = Client()
         self.request = RequestFactory()
+        self.users = [UserFactory.create() for i in range(20)]
+        self.photos = [PhotoFactory.create() for i in range(20)]
+        self.albums = [AlbumFacotory.create() for i in range(20)]
 
     """
     To test:
@@ -276,3 +280,250 @@ class FrontEndTestCase(TestCase):
         albums are visible in albums.html
         correct number of photos and albums are visible
     """
+    def test_libary_view_returns_200(self):
+        """Test Library View returns a 200."""
+        user = UserFactory.create()
+        user.save()
+        view = library
+        req = self.request.get(reverse_lazy('library'))
+        req.user = user
+        response = view(req)
+        self.assertTrue(response.status_code == 200)
+
+    def test_logged_in_user_has_library(self):
+        """A logged in user gets a 200 resposne."""
+        user = UserFactory.create()
+        user.save()
+        self.client.force_login(user)
+        response = self.client.get(reverse_lazy("library"))
+        self.assertTrue(response.status_code == 200)
+
+    def test_logged_in_user_sees_their_albums(self):
+        """Test that a logged in user can see their images in library."""
+        user = UserFactory.create()
+        album1 = Album.objects.first()
+        user.albums.add(album1)
+        user.save()
+        self.client.force_login(user)
+        response = self.client.get(reverse_lazy("library"))
+        self.assertTrue(album1.title in str(response.content))
+
+    def test_album_view_returns_200(self):
+        """Test that the album view returns a 200."""
+        req = self.request.get(reverse_lazy('all_albums'))
+        response = all_albums(req)
+        self.assertTrue(response.status_code == 200)
+
+    def test_photoid_view_returns_200(self):
+        """Test that the photo id view returns a 200."""
+        photo = self.photos[6]
+        image = SimpleUploadedFile(
+            name='test_image.jpg',
+            content=open('imager_images/test_img.jpg', 'rb').read(),
+            content_type='image/jpeg'
+        )
+        photo.image = image
+        photo.save()
+        response = self.client.get(reverse_lazy('public_profile',
+                                                kwargs={'photo_id': photo.id}))
+        self.assertTrue(response.status_code == 200)
+
+    def test_photoid_view_returns_error_private_photo(self):
+        """Test that a user cannot view a private photo of another user."""
+        photo = self.photos[12]
+        photo.published = 'private'
+        image = SimpleUploadedFile(
+            name='test_image.jpg',
+            content=open('imager_images/test_img.jpg', 'rb').read(),
+            content_type='image/jpeg'
+        )
+        photo.image = image
+        photo.save()
+        response = self.client.get(reverse_lazy('public_profile',
+                                                kwargs={'photo_id': photo.id}))
+        self.assertTrue(response.status_code == 401)
+
+    def test_photo_id_user_views_own_private_photo(self):
+        """Test that a user can view their own private photo."""
+        user = self.users[2]
+        user.save()
+        self.client.force_login(user)
+        photo = self.photos[15]
+        photo.published = 'private'
+        photo.user = user
+        image = SimpleUploadedFile(
+            name='test_image.jpg',
+            content=open('imager_images/test_img.jpg', 'rb').read(),
+            content_type='image/jpeg'
+        )
+        photo.image = image
+        photo.save()
+        response = self.client.get(reverse_lazy('public_profile',
+                                                kwargs={'photo_id': photo.id}))
+        self.assertTrue(response.status_code == 200)
+
+    def test_albumid_view_returns_200(self):
+        """Test that the album id view returns a 200."""
+        user = self.users[0]
+        self.client.force_login(user)
+        album = self.albums[9]
+        album.user = user
+        album.save()
+        response = self.client.get(reverse_lazy('single_album',
+                                                kwargs={'album_id': album.id}))
+        self.assertTrue(response.status_code == 200)
+
+    def test_album_id_view_doesnt_return_private_album(self):
+        """Test that a user cannot view a private album."""
+        album = self.albums[9]
+        album.published = 'private'
+        album.save()
+        response = self.client.get(reverse_lazy('single_album',
+                                                kwargs={'album_id': album.id}))
+        self.assertTrue(response.status_code == 401)
+
+    # def test_albumid_view_returns_error_private_album(self):
+    #     """Test that a user cannot view a private album of another user."""
+    #     user = User()
+    #     user.username = "jabba"
+    #     user.set_password('itspizza')
+    #     user.save()
+    #     user2 = User()
+    #     user2.username = "maxrebo"
+    #     user2.set_password('itsaband')
+    #     user2.save()
+    #     self.client.force_login(user2)
+    #     album = AlbumFactory()
+    #     album.published = 'private'
+    #     album.owner = user.profile
+    #     album.save()
+    #     response = self.client.get(reverse_lazy('individual_album',
+    #                                             kwargs={'pk': album.id}))
+    #     self.assertTrue(response.context_data['error'])
+
+    # def test_albumid_user_views_own_private_album(self):
+    #     """Test that a user can view their own private album."""
+    #     user = User()
+    #     user.username = "jabba"
+    #     user.set_password('itspizza')
+    #     user.save()
+    #     self.client.force_login(user)
+    #     album = AlbumFactory()
+    #     album.published = 'private'
+    #     album.owner = user.profile
+    #     album.save()
+    #     response = self.client.get(reverse_lazy('individual_album',
+    #                                             kwargs={'pk': album.id}))
+    #     self.assertTrue(response.context_data['album'])
+
+    # def new_user_signed_in(self):
+    #     """Make and sign in new user."""
+    #     user = User()
+    #     user.username = "jabba"
+    #     user.set_password('itspizza')
+    #     user.save()
+    #     self.client.force_login(user)
+    #     return user
+
+    # def submit_add_image_form(self):
+    #     """Submit a form to test."""
+    #     image = SimpleUploadedFile(name='test_image.jpg', content=open('imagersite/static/images.jpg', 'rb').read(), content_type='image/jpeg')
+    #     response = self.client.post(reverse_lazy('add_photos'),
+    #                                 {'title': 'itsatitle',
+    #                                  'description': 'his greatness jabba',
+    #                                  'published': 'public',
+    #                                  'image': image})
+    #     return response
+
+    # def test_add_an_image_count(self):
+    #     """Test that adding an image increases the model count."""
+    #     self.new_user_signed_in()
+    #     images = Image.objects.count()
+    #     self.submit_add_image_form()
+    #     assert Image.objects.count() == images + 1
+
+    # def test_add_an_image_correct_owner(self):
+    #     """Test that a new added image is owned by the user."""
+    #     user = self.new_user_signed_in()
+    #     users_images = user.profile.images.count()
+    #     self.submit_add_image_form()
+    #     assert user.profile.images.count() == users_images + 1
+
+    # def test_add_two_images_correct_owner(self):
+    #     """Test that a new added images are owned by the user."""
+    #     user = self.new_user_signed_in()
+    #     users_images = user.profile.images.count()
+    #     self.submit_add_image_form()
+    #     self.submit_add_image_form()
+    #     assert user.profile.images.count() == users_images + 2
+
+    # def test_add_an_image_correct_published(self):
+    #     """Test that a new added image has the right published type."""
+    #     user = self.new_user_signed_in()
+    #     self.submit_add_image_form()
+    #     assert user.profile.images.first().published == 'public'
+
+    # def test_add_an_image_correct_decription(self):
+    #     """Test that a new added image has the right description."""
+    #     user = self.new_user_signed_in()
+    #     self.submit_add_image_form()
+    #     assert user.profile.images.first().description == 'his greatness jabba'
+
+    # def test_new_image_in_users_library(self):
+    #     """Test that a new added image's description shows up in the library page."""
+    #     user = self.new_user_signed_in()
+    #     self.submit_add_image_form()
+    #     response = self.client.get(reverse_lazy('library'))
+    #     assert user.profile.images.first().description in str(response.content)
+
+    # def submit_add_album_form(self):
+    #     """Submit a form to test add album."""
+    #     image = SimpleUploadedFile(name='test_image.jpg', content=open('imagersite/static/images.jpg', 'rb').read(), content_type='image/jpeg')
+    #     response = self.client.post(reverse_lazy('add_albums'),
+    #                                 {'title': 'itsanalbum',
+    #                                  'description': 'mostly hosting pod races',
+    #                                  'published': 'public',
+    #                                  'cover_image': image
+    #                                  })
+    #     return response
+
+    # def test_add_an_album_count(self):
+    #     """Test that adding an album increases the model count."""
+    #     self.new_user_signed_in()
+    #     albums = Album.objects.count()
+    #     self.submit_add_album_form()
+    #     assert Album.objects.count() == albums + 1
+
+    # def test_add_an_album_correct_owner(self):
+    #     """Test that a new added album is owned by the user."""
+    #     user = self.new_user_signed_in()
+    #     users_albums = user.profile.albums.count()
+    #     self.submit_add_album_form()
+    #     assert user.profile.albums.count() == users_albums + 1
+
+    # def test_add_two_albums_correct_owner(self):
+    #     """Test that a new added albums are owned by the user."""
+    #     user = self.new_user_signed_in()
+    #     users_albums = user.profile.albums.count()
+    #     self.submit_add_album_form()
+    #     self.submit_add_album_form()
+    #     assert user.profile.albums.count() == users_albums + 2
+
+    # def test_add_an_album_correct_published(self):
+    #     """Test that a new added album has the right published type."""
+    #     user = self.new_user_signed_in()
+    #     self.submit_add_album_form()
+    #     assert user.profile.albums.first().published == 'public'
+
+    # def test_add_an_album_correct_decription(self):
+    #     """Test that a new added album has the right description."""
+    #     user = self.new_user_signed_in()
+    #     self.submit_add_album_form()
+    #     assert user.profile.albums.first().description == 'mostly hosting pod races'
+
+    # def test_new_album_in_users_library(self):
+    #     """Test that a new added album's description shows up in the library page."""
+    #     user = self.new_user_signed_in()
+    #     self.submit_add_album_form()
+    #     response = self.client.get(reverse_lazy('library'))
+    #     assert user.profile.albums.first().description in str(response.content)
