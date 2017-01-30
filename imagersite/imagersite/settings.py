@@ -87,7 +87,7 @@ DATABASES = {
         # 'HOST': '127.0.0.1',
         # 'PORT': '5432',
         'TEST': {
-            'NAME': os.environ['TEST_IMAGER']
+            'NAME': os.environ['TEST_IMAGER_DATABASE']
         }
     }
 }
