@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>App</title>
+</head>
+<body>
+{% if user.is_authenticated %}
+    <a href="{% url 'logout' %}" title="logout">Logout</a>
+{% else %}
+    <a href="/login" title="login">Login</a>
+{% endif %}
+{% block content %}
+{% endblock %}
+</body>
+</html>
