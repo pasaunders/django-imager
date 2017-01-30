@@ -1,5 +1,6 @@
 [![Build Status](https://travis-ci.org/pasaunders/django-imager.svg?branch=front-end-1)](https://travis-ci.org/pasaunders/django-imager)
-## Getting Started
+# Django Imager
+### Getting Started
 
 Clone this repository into whatever directory you want to work from.
 
@@ -24,7 +25,7 @@ Once your environment has been activated, make sure to install Django and all of
 Navigate to the project root, `imagersite`, and apply the migrations for the app.
 
 ```bash
-(django-imager) $ cd lending_library
+(django-imager) $ cd imagersite
 (django-imager) $ ./manage.py migrate
 ```
 
