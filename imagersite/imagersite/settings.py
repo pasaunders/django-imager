@@ -20,10 +20,10 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/1.10/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ['DATABASE_PORT']
+SECRET_KEY = '5m(o9rkvq-2$u452_313+-m9&gn*8%mqj+&^yum=r!%h%@(%!j'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = []
 
@@ -82,10 +82,13 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': os.environ['IMAGER_DATABASE'],
-        'USER': os.environ['DATABASE_USER'],
-        'PASSWORD': os.environ['DATABASE_PASSWORD'],
-        'HOST': os.environ['DATABASE_HOST'],
-        'PORT': os.environ['DATABASE_PORT']
+        # 'USER': os.environ['DATABASE_USER'],
+        # 'PASSWORD': os.environ['DATABASE_PASSWORD'],
+        # 'HOST': '127.0.0.1',
+        # 'PORT': '5432',
+        'TEST': {
+            'NAME': os.environ['TEST_IMAGER']
+        }
     }
 }
 
@@ -131,13 +134,13 @@ STATIC_URL = '/static/'
 
 # Registration Settings
 ACCOUNT_ACTIVATION_DAYS = 3
-# EMAIL_HOST = '127.0.0.1'
-# EMAIL_PORT = 1025
+EMAIL_HOST = '127.0.0.1'
+EMAIL_PORT = 1025
 
 # Login/out settings
 LOGIN_REDIRECT_URL='/profile/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'MEDIA')
 MEDIA_URL = "/media/"
-THUMBNAIL_DEBUG = False
+THUMBNAIL_DEBUG = True
 
 EMAIL_BACKEDN = 'django.core.mail.backends.console.EmailBackend'
