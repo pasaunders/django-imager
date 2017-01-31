@@ -1,0 +1,29 @@
+{% extends 'imagersite/base.html' %}
+{% load thumbnail %}
+{% block content %}
+<section>
+{% if user.first_name %}
+<h2>{{user.first_name|title }}'s Library</h2>
+{% else %}
+<h2>{{user.username }}'s Library</h2>
+{% endif %}
+<h3>Albums:</h3>
+{% for album in albums %}
+<a href="albums/{{ album.id }}" title="">
+<h3>{{ album.title }}</h3>
+{% thumbnail album.cover.image "200x200" crop="center" as im %}
+<img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
+{% endthumbnail %}
+</a>
+{% endfor %}
+<h3>Images</h3>
+{% for photo in photos %}
+<a href="{% url 'public_profile' photo.id %}">
+<h3>{{ photo.title }}</h3>
+{% thumbnail photo.image "200x200" crop="center" as im %}
+    <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
+{% endthumbnail %}
+</a>
+{% endfor %}
+</section>
+{% endblock content %}
