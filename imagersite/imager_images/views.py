@@ -3,6 +3,7 @@ from imager_images.models import Photo, Album
 from django.http import HttpResponse
 from django.views.generic import ListView, TemplateView, CreateView, UpdateView
 from django.urls import reverse_lazy
+from django.http import Http404
 
 
 class PhotoView(ListView):
@@ -16,7 +17,9 @@ class PhotoView(ListView):
         photo = Photo.objects.get(id=self.kwargs['photo_id'])
         if photo.published != 'private' or photo.user.username == self.request.user.username:
             return {"photo": photo}
-        return HttpResponse('Unauthorized', status=401)
+        else:
+            raise Http404('Unauthorized')
+        return {}
 
 
 class PhotosView(TemplateView):
@@ -45,7 +48,9 @@ class AlbumView(ListView):
         album = Album.objects.get(id=self.kwargs['album_id'])
         if album.published != 'private' or album.user.username == self.request.user.username:
             return {'album': album}
-        return HttpResponse('Unauthorized', status=401)
+        else:
+            raise Http404('Unauthorized')
+        return {}
 
 
 class AlbumsView(TemplateView):

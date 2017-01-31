@@ -131,7 +131,7 @@ class PhotoTestCase(TestCase):
             content=open('imager_images/test_img.jpg', 'rb').read(),
             content_type='image/jpeg'
         )
-        import pdb; pdb.set_trace()
+        # import pdb; pdb.set_trace()
         photo.image = image
         self.assertTrue(photo.image.name is not None)
 
@@ -329,7 +329,7 @@ class FrontEndTestCase(TestCase):
                                                 kwargs={'photo_id': photo.id}))
         self.assertTrue(response.status_code == 200)
 
-    def test_photoid_view_returns_error_private_photo(self):
+    def test_photo_id_view_returns_error_private_photo(self):
         """Test that a user cannot view a private photo of another user."""
         photo = self.photos[12]
         photo.published = 'private'
@@ -340,9 +340,10 @@ class FrontEndTestCase(TestCase):
         )
         photo.image = image
         photo.save()
+        import pdb; pdb.set_trace()
         response = self.client.get(reverse_lazy('single_photo',
                                                 kwargs={'photo_id': photo.id}))
-        self.assertTrue(response.status_code == 401)
+        self.assertTrue(response.status_code == 404)
 
     def test_photo_id_user_views_own_private_photo(self):
         """Test that a user can view their own private photo."""
@@ -384,7 +385,7 @@ class FrontEndTestCase(TestCase):
         # import pdb; pdb.set_trace()
         response = self.client.get(reverse_lazy('AlbumView',
                                                 kwargs={'album_id': album.id}))
-        self.assertTrue(response.status_code == 401)
+        self.assertTrue(response.status_code == 404)
 
     def test_description_of_album_shows(self):
         """Test that the description of an album shows."""
