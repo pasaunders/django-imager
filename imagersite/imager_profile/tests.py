@@ -92,13 +92,6 @@ class FrontendTestCases(TestCase):
         self.client = Client()
         self.request = RequestFactory()
 
-    def test_home_view_status(self):
-        """Test home view has 200 status."""
-        from imagersite.views import home_view
-        req = self.request.get("/route")
-        response = home_view(req)
-        self.assertTrue(response.status_code == 200)
-
     def test_home_route_status(self):
         """Test home route has 200 status."""
         response = self.client.get("/")

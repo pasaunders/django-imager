@@ -15,9 +15,9 @@ from django.contrib.auth.decorators import login_required
 
 urlpatterns = [
     url(r'^photos/add/$', AddPhoto.as_view(), name='AddPhoto'),
-    url(r'^photos/(?P<photo_id>\d+)$', PhotoView.as_view(), name='photo'),
+    url(r'^photos/(?P<photo_id>\d+)$', PhotoView.as_view(), name='single_photo'),
     url(r'^photos/(?P<pk>\d+)/edit/$', EditPhoto.as_view(), name='edit_photo'),
-    url(r'^photos/$', PhotosView.as_view(), name='private_profile'),
+    url(r'^photos/$', PhotosView.as_view(), name='photos'),
     url(r'^albums/(?P<album_id>\d+)/$', AlbumView.as_view(), name='AlbumView'),
     url(r'^albums/(?P<pk>\d+)/edit/$', EditAlbum.as_view(), name='edit_album'),
     url(r'^albums/add/$', AddAlbum.as_view(), name='AddAlbum'),

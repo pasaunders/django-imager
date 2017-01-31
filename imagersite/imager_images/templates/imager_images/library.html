@@ -5,6 +5,7 @@
 <h2>{{user.username|title}}'s Library</h2>
 <h3>Albums:</h3>
 {% for album in albums %}
+<h3>{{album.title}}</h3>
 <a href="{% url 'AlbumView' album.id %}" title="">
 {% thumbnail album.cover.image "200x200" crop="center" as im %}
 <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
