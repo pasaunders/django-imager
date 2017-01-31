@@ -125,13 +125,13 @@ class PhotoTestCase(TestCase):
     def test_user_has_photo_uploaded(self):
         """Test user has photo uploaded."""
         photo = self.photos[4]
-        # import pdb; pdb.set_trace()
-        self.assertTrue(photo.image.name is None)
+        # self.assertTrue(photo.image.name is None)
         image = SimpleUploadedFile(
             name='test_image.jpg',
             content=open('imager_images/test_img.jpg', 'rb').read(),
             content_type='image/jpeg'
         )
+        import pdb; pdb.set_trace()
         photo.image = image
         self.assertTrue(photo.image.name is not None)
 
@@ -312,8 +312,7 @@ class FrontEndTestCase(TestCase):
 
     def test_album_view_returns_200(self):
         """Test that the album view returns a 200."""
-        req = self.request.get(reverse_lazy('AlbumsView'))
-        # response = AlbumsView.as_view(req)
+        response = self.client.get(reverse_lazy('AlbumsView'))
         self.assertTrue(response.status_code == 200)
 
     def test_photoid_view_returns_200(self):
@@ -378,11 +377,11 @@ class FrontEndTestCase(TestCase):
     def test_album_id_view_doesnt_return_private_album(self):
         """Test that a user cannot view a private album."""
         album = self.albums[9]
-        import pdb; pdb.set_trace()
+        # import pdb; pdb.set_trace()
         album.published = 'private'
         album.save()
         # Album.objects.get(id=album.id)
-        import pdb; pdb.set_trace()
+        # import pdb; pdb.set_trace()
         response = self.client.get(reverse_lazy('AlbumView',
                                                 kwargs={'album_id': album.id}))
         self.assertTrue(response.status_code == 401)
