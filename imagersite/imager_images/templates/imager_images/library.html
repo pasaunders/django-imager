@@ -2,6 +2,11 @@
 {% load thumbnail %}
 {% block content %}
 <section>
+{% if user.first_name %}
+<h2>{{user.first_name|title }}'s Library</h2>
+{% else %}
+<h2>{{user.username }}'s Library</h2>
+{% endif %}
 <h2>{{user.username|title}}'s Library</h2>
 <h3>Albums:</h3>
 {% for album in albums %}
