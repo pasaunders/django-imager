@@ -1,0 +1,17 @@
+{% extends 'imagersite/base.html' %}
+{% block content %}
+{% load bootstrap3 %}
+<form method="post">
+  <div class="input-group">
+    {{ form.username.label_tag }}
+    {{ form.username }}
+  </div>
+  <div class="input-group">
+    {{ form.password.label_tag }}
+    {{ form.password }}
+  </div>
+    {% csrf_token %}
+    {% bootstrap_button "Login" button_type="submit" button_class="btn-primary" %}
+    <!-- <input type="hidden" name="next" value="/profile/" /> -->
+</form>
+{% endblock content %}
