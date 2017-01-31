@@ -5,7 +5,7 @@
 <div>
 {% for album in albums %}
 <h1>{{ album.title }}</h1>
-<a href="albums/{{ album.id }}">
+<a href="{% url 'single_album' album.id %}">
 {% thumbnail album.cover.image "200x200" crop="center" as im %}
     <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
 {% endthumbnail %}

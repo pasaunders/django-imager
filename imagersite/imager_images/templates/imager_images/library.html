@@ -2,7 +2,11 @@
 {% load thumbnail %}
 {% block content %}
 <section>
-<h2>{{user.first_name|title}}'s Library</h2>
+{% if user.first_name %}
+<h2>{{user.first_name|title }}'s Library</h2>
+{% else %}
+<h2>{{user.username }}'s Library</h2>
+{% endif %}
 <h3>Albums:</h3>
 {% for album in albums %}
 <a href="albums/{{ album.id }}" title="">
