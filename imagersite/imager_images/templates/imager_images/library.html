@@ -24,6 +24,9 @@
     {% endthumbnail %}
     </a>
     {{single_photo.title}}
+    {% for tag in photo.tags.all %}
+        <a href="{% url "imager_images:tagged_photos" tag.slug %}">{{ tag }}</a>
+    {% endfor %}
     {% endfor %}
 </section>
 {% endblock content %}
