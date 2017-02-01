@@ -20,12 +20,12 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/1.10/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '5m(o9rkvq-2$u452_313+-m9&gn*8%mqj+&^yum=r!%h%@(%!j'
+SECRET_KEY = os.environ['SECRET_KEY']
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [os.environ['AWS_HOST'], 'localhost']
 
 
 # Application definition
@@ -82,13 +82,10 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': os.environ['IMAGER_DATABASE'],
-        # 'USER': os.environ['DATABASE_USER'],
-        # 'PASSWORD': os.environ['DATABASE_PASSWORD'],
-        # 'HOST': '127.0.0.1',
-        # 'PORT': '5432',
-        'TEST': {
-            'NAME': os.environ['TEST_IMAGER']
-        }
+        'USER': os.environ['DATABASE_USER'],
+        'PASSWORD': os.environ['DATABASE_PASSWORD'],
+        'HOST': os.environ['DATABASE_NAME'],
+        'PORT': os.environ['DATABASE_PORT'],
     }
 }
 
@@ -134,13 +131,16 @@ STATIC_URL = '/static/'
 
 # Registration Settings
 ACCOUNT_ACTIVATION_DAYS = 3
-EMAIL_HOST = '127.0.0.1'
-EMAIL_PORT = 1025
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+
+EMAIL_HOST_USER = '' # email address goes in the string
+EMAIL_HOST_PASSWORD = os.environ.get['EMAIL_PASSWORD']
 
 # Login/out settings
 LOGIN_REDIRECT_URL='/profile/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'MEDIA')
 MEDIA_URL = "/media/"
 THUMBNAIL_DEBUG = True
-
-EMAIL_BACKEDN = 'django.core.mail.backends.console.EmailBackend'
