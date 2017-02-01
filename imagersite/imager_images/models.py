@@ -1,7 +1,9 @@
+"""Album and Photo models."""
 from __future__ import unicode_literals
 from django.utils.encoding import python_2_unicode_compatible
 from django.db import models
 from django.contrib.auth.models import User
+from taggit.managers import TaggableManager
 
 PUBLISHED_OPTIONS = (
     ("private", "private"),
@@ -19,6 +21,7 @@ def image_path(instance, file_name):
 class Photo(models.Model):
     """Create Photo Model."""
 
+    tags = TaggableManager()
     user = models.ForeignKey(
         User,
         related_name='photos',
