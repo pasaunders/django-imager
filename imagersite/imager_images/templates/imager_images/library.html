@@ -2,28 +2,28 @@
 {% load thumbnail %}
 {% block content %}
 <section>
-{% if user.first_name %}
-<h2>{{user.first_name|title }}'s Library</h2>
-{% else %}
-<h2>{{user.username }}'s Library</h2>
-{% endif %}
-<h3>Albums:</h3>
-{% for album in albums %}
-<h3>{{album.title}}</h3>
-<a href="{% url 'AlbumView' album.id %}" title="">
-{% thumbnail album.cover.image "200x200" crop="center" as im %}
-<img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
-{% endthumbnail %}
-</a>
-{% endfor %}
-<h3>Images:</h3>
-{% for photo in photos %}
-<a href="{% url 'imager_images:single_photo' photo.id %}">
-{% thumbnail photo.image "200x200" crop="center" as im %}
+    {% if user.first_name %}
+    <h2>{{user.first_name|title }}'s Library</h2>
+    {% else %}
+    <h2>{{user.username }}'s Library</h2>
+    {% endif %}
+    <h3>Albums:</h3>
+    {% for album in albums %}
+    <h3>{{album.title}}</h3>
+    <a href="{% url 'imager_images:AlbumView' album.id %}" title="">
+    {% thumbnail album.cover.image "200x200" crop="center" as im %}
     <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
-{% endthumbnail %}
-</a>
-{{single_photo.title}}
-{% endfor %}
+    {% endthumbnail %}
+    </a>
+    {% endfor %}
+    <h3>Images:</h3>
+    {% for photo in photos %}
+    <a href="{% url 'imager_images:single_photo' photo.id %}">
+    {% thumbnail photo.image "200x200" crop="center" as im %}
+    <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
+    {% endthumbnail %}
+    </a>
+    {{single_photo.title}}
+    {% endfor %}
 </section>
 {% endblock content %}
