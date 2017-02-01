@@ -61,7 +61,7 @@ class Album(models.Model):
     date_created = models.DateTimeField(auto_now_add=True)
     date_modified = models.DateTimeField(auto_now=True)
     date_published = models.DateTimeField(blank=True, null=True)
-    published = models.CharField(choices=PUBLISHED_OPTIONS, default='public')
+    published = models.CharField(max_length=10, choices=PUBLISHED_OPTIONS, default='public')
 
     def __str__(self):
         """Return String Representation of Album."""

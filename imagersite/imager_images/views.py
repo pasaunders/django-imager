@@ -1,9 +1,10 @@
 """Views for images."""
 from imager_images.models import Photo, Album
-from django.http import HttpResponse
+from django.http import HttpResponse  # reimplement if we get around to fixing the views, otherwise use below.
+from django.http import Http404
 from django.views.generic import ListView, TemplateView, CreateView, UpdateView
 from django.urls import reverse_lazy
-from django.http import Http404
+from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
 
 
 class PhotoView(ListView):
@@ -68,8 +69,10 @@ class AlbumsView(TemplateView):
         return {'albums': public_albums}
 
 
-class Library(TemplateView):
+class Library(LoginRequiredMixin, TemplateView):
     """Library View."""
+
+    login_url = reverse_lazy('login')
 
     template_name = "imager_images/library.html"
 
@@ -80,8 +83,10 @@ class Library(TemplateView):
         return {'albums': albums, 'photos': photos}
 
 
-class AddAlbum(CreateView):
+class AddAlbum(PermissionRequiredMixin, CreateView):
     """Add Album."""
+
+    permission_required = "imager_images.add_album"
 
     template_name = "imager_images/add_album.html"
     model = Album
@@ -94,8 +99,10 @@ class AddAlbum(CreateView):
         return super(AddAlbum, self).form_valid(form)
 
 
-class EditAlbum(UpdateView):
+class EditAlbum(PermissionRequiredMixin, UpdateView):
     """Add Album."""
+
+    permission_required = "imager_images.change_album"
 
     template_name = "imager_images/add_album.html"
     model = Album
@@ -103,8 +110,11 @@ class EditAlbum(UpdateView):
     success_url = reverse_lazy('library')
 
 
-class AddPhoto(CreateView):
+class AddPhoto(PermissionRequiredMixin, CreateView):
     """Add a photo."""
+
+    login_url = reverse_lazy('login')
+    permission_required = "imager_images.add_photo"
 
     template_name = "imager_images/add_photo.html"
     model = Photo
@@ -117,8 +127,10 @@ class AddPhoto(CreateView):
         return super(AddPhoto, self).form_valid(form)
 
 
-class EditPhoto(UpdateView):
+class EditPhoto(PermissionRequiredMixin, UpdateView):
     """Add a photo."""
+
+    permission_required = "imager_images.change_photo"
 
     template_name = "imager_images/add_photo.html"
     model = Photo

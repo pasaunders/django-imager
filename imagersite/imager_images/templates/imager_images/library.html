@@ -7,7 +7,6 @@
 {% else %}
 <h2>{{user.username }}'s Library</h2>
 {% endif %}
-<h2>{{user.username|title}}'s Library</h2>
 <h3>Albums:</h3>
 {% for album in albums %}
 <h3>{{album.title}}</h3>
@@ -17,14 +16,14 @@
 {% endthumbnail %}
 </a>
 {% endfor %}
-<h3>Images</h3>
+<h3>Images:</h3>
 {% for photo in photos %}
-<a href="{% url 'photo' photo.id %}">
+<a href="{% url 'imager_images:single_photo' photo.id %}">
 {% thumbnail photo.image "200x200" crop="center" as im %}
     <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
 {% endthumbnail %}
 </a>
-{{photo.title}}
+{{single_photo.title}}
 {% endfor %}
 </section>
 {% endblock content %}

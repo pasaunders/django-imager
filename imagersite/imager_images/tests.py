@@ -340,7 +340,6 @@ class FrontEndTestCase(TestCase):
         )
         photo.image = image
         photo.save()
-        import pdb; pdb.set_trace()
         response = self.client.get(reverse_lazy('single_photo',
                                                 kwargs={'photo_id': photo.id}))
         self.assertTrue(response.status_code == 404)
@@ -395,7 +394,7 @@ class FrontEndTestCase(TestCase):
         self.assertTrue('is an album' in response.content.decode())
 
     def test_description_of_photo_shows(self):
-        """Test that the description of an photo shows."""
+        """Test that the description of a photo shows."""
         photo = self.photos[17]
         image = SimpleUploadedFile(
             name='test_image.jpg',

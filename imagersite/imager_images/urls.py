@@ -13,6 +13,7 @@ from .views import(
 )
 from django.contrib.auth.decorators import login_required
 
+app_name = 'imager_images'
 urlpatterns = [
     url(r'^photos/add/$', AddPhoto.as_view(), name='AddPhoto'),
     url(r'^photos/(?P<photo_id>\d+)$', PhotoView.as_view(), name='single_photo'),
