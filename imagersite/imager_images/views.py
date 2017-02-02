@@ -26,7 +26,6 @@ class PhotoView(ListView):
                     tag_match.append(next_photo)
                 if len(tag_match) >= 5:
                     break
-        import pdb; pdb.set_trace()
         if photo.published != 'private' or photo.user.username == self.request.user.username:
             return {"photo": photo, "tag_match": tag_match}
         else:

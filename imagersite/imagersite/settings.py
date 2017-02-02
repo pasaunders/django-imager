@@ -141,7 +141,7 @@ EMAIL_HOST_USER = 'djangoimagersite@gmail.com'
 EMAIL_HOST_PASSWORD = os.environ.get['EMAIL_PASSWORD']
 
 # Login/out settings
-LOGIN_REDIRECT_URL='/profile/'
+LOGIN_REDIRECT_URL = '/profile/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'MEDIA')
 MEDIA_URL = "/media/"
 THUMBNAIL_DEBUG = False
