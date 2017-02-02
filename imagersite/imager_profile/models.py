@@ -1,7 +1,7 @@
 """Models for imager_profile."""
 
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.utils.encoding import python_2_unicode_compatible
 from django.db.models.signals import post_save
 from django.dispatch import receiver
@@ -38,15 +38,14 @@ class ImagerProfile(models.Model):
     camera_type = models.CharField(
         max_length=10,
         choices=CAMERA_CHOICES,
-        null=True,
-        blank=True
+        default=""
     )
-    address = models.CharField(max_length=70, null=True, blank=True)
+    address = models.CharField(max_length=70, default="")
     bio = models.TextField(default="")
     personal_website = models.URLField(default="")
     for_hire = models.BooleanField(default=False)
-    travel_distance = models.IntegerField(null=True, blank=True)
-    phone_number = models.CharField(max_length=20, null=True, blank=True)
+    travel_distance = models.IntegerField(default=0)
+    phone_number = models.CharField(max_length=20, default="")
     STYLE_CHOICES = [
         ('Portrait', 'Portrait'),
         ('Landscape', 'Landscape'),
@@ -56,8 +55,7 @@ class ImagerProfile(models.Model):
     photography_type = models.CharField(
         max_length=20,
         choices=STYLE_CHOICES,
-        null=True,
-        blank=True
+        default=""
     )
 
     @property
@@ -74,5 +72,7 @@ class ImagerProfile(models.Model):
 def make_profile_for_user(sender, instance, **kwargs):
     """Called when user is made and hooks that user to a profile."""
     if kwargs["created"]:
+        group = Group.objects.get(name="user")
+        instance.groups.add(group)
         new_profile = ImagerProfile(user=instance)
         new_profile.save()
