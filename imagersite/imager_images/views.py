@@ -5,6 +5,7 @@ from django.http import Http404
 from django.views.generic import ListView, TemplateView, CreateView, UpdateView
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
+import random
 
 
 class PhotoView(ListView):
@@ -16,8 +17,18 @@ class PhotoView(ListView):
     def get_context_data(self):
         """Return photo."""
         photo = Photo.objects.get(id=self.kwargs['photo_id'])
+        tag_match = []
+        for tag in photo.tags.all():
+            check_photo = Photo.objects.filter(tags__slug=tag).all()
+            if check_photo:
+                next_photo = random.choice(check_photo)
+                if next_photo not in tag_match:
+                    tag_match.append(next_photo)
+                if len(tag_match) >= 5:
+                    break
+        import pdb; pdb.set_trace()
         if photo.published != 'private' or photo.user.username == self.request.user.username:
-            return {"photo": photo}
+            return {"photo": photo, "tag_match": tag_match}
         else:
             raise Http404('Unauthorized')
         return {}
@@ -134,8 +145,9 @@ class AddPhoto(PermissionRequiredMixin, CreateView):
 
     template_name = "imager_images/add_photo.html"
     model = Photo
-    fields = ['image', 'title', 'description', 'date_published', 'published']
-    success_url = reverse_lazy('library')
+    fields = ['image', 'title', 'description', 'date_published', 'published', 'tags']
+    # success_url = '/images/library'
+    success_url = reverse_lazy('imager_images:library')
 
     def form_valid(self, form):
         """Make the form user instance the current user."""
@@ -150,5 +162,6 @@ class EditPhoto(PermissionRequiredMixin, UpdateView):
 
     template_name = "imager_images/add_photo.html"
     model = Photo
-    fields = ['image', 'title', 'description', 'date_published', 'published']
-    success_url = reverse_lazy('library')
+    fields = ['image', 'title', 'description', 'date_published', 'published', 'tags']
+    # success_url = '/images/library'
+    success_url = reverse_lazy('imager_images:library')
