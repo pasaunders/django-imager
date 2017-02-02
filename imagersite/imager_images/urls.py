@@ -9,7 +9,8 @@ from .views import(
     AddAlbum,
     AddPhoto,
     EditAlbum,
-    EditPhoto
+    EditPhoto,
+    TagListView
 )
 from django.contrib.auth.decorators import login_required
 
@@ -24,4 +25,5 @@ urlpatterns = [
     url(r'^albums/add/$', AddAlbum.as_view(), name='AddAlbum'),
     url(r'^albums/$', AlbumsView.as_view(), name='AlbumsView'),
     url(r'^library/$', login_required(Library.as_view()), name='library'),
+    url(r'^tagged/(?P<slug>[-\w]+)/$', TagListView.as_view(), name="tagged_photos")
 ]
