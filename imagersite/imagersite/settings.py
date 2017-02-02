@@ -25,7 +25,7 @@ SECRET_KEY = os.environ['SECRET_KEY']
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = [os.environ['AWS_HOST'], 'localhost']
+ALLOWED_HOSTS = [os.environ['AWS_HOST'], os.environ['AWS_HOST_IP'], 'localhost']
 
 
 # Application definition
