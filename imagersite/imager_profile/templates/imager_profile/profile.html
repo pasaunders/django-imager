@@ -18,5 +18,9 @@
     <li>Albums Created: {{user.albums.count}}
     {% endifequal %}
 </ul>
+{% if user.is_authenticated %}
+<a class="btn" href="{% url 'imager_images:AddPhoto' %}"><button type="button" class="btn btn-primary">Add Photo</button>
+</a>
+{% endif %}
 </section>
 {% endblock %}
