@@ -15,6 +15,7 @@
     <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
     {% endthumbnail %}
     </a>
+    <a class="btn" href="/images/albums/{{ album.id }}/edit/"><button type="button" class="btn btn-primary btn-sm">Edit Album</button>
     {% endfor %}
     <h3>Images:</h3>
     {% for photo in photos %}
