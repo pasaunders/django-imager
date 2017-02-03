@@ -15,6 +15,7 @@
     <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
     {% endthumbnail %}
     </a>
+    <a class="btn" href="/images/albums/{{ album.id }}/edit/"><button type="button" class="btn btn-primary btn-sm">Edit Album</button>
     {% endfor %}
     <h3>Images:</h3>
     {% for photo in photos %}
@@ -24,9 +25,12 @@
     {% endthumbnail %}
     </a>
     {{single_photo.title}}
+    <a class="btn" href="/images/photos/{{ photo.id }}/edit/"><button type="button" class="btn btn-primary btn-sm">Edit Photo</button>
     {% for tag in photo.tags.all %}
         <a href="{% url "imager_images:tagged_photos" tag.slug %}">{{ tag }}</a>
     {% endfor %}
     {% endfor %}
 </section>
 {% endblock content %}
+
+{% url 'imager_images:edit_photo' single_photo.id %}
