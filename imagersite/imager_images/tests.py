@@ -1,11 +1,27 @@
 """Test the imager_images app."""
 from django.test import TestCase, Client, RequestFactory
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group, Permission
 from django.core.files.uploadedfile import SimpleUploadedFile
 from imager_images.models import Photo, Album
 import factory
 from django.core.urlresolvers import reverse_lazy
 from .views import PhotosView, AlbumView, AlbumsView, Library, PhotoView, AddAlbum, AddPhoto, EditAlbum, EditPhoto
+
+
+def add_user_group():
+    """Add user group with permissions to testing database."""
+    new_group, created = Group.objects.get_or_create(name='user')
+    permission1 = Permission.objects.get(name='Can add album')
+    permission2 = Permission.objects.get(name='Can change album')
+    permission3 = Permission.objects.get(name='Can delete album')
+    permission4 = Permission.objects.get(name='Can add photo')
+    permission5 = Permission.objects.get(name='Can change photo')
+    permission6 = Permission.objects.get(name='Can delete photo')
+    new_group.permissions.add(
+        permission1, permission2, permission3,
+        permission4, permission5, permission6
+    )
+    new_group.save()
 
 
 class UserFactory(factory.django.DjangoModelFactory):
@@ -54,6 +70,7 @@ class PhotoTestCase(TestCase):
 
     def setUp(self):
         """The appropriate setup for the appropriate test."""
+        add_user_group()
         self.users = [UserFactory.create() for i in range(20)]
         self.photos = [PhotoFactory.create() for i in range(20)]
 
@@ -141,6 +158,7 @@ class AlbumTestCase(TestCase):
 
     def setUp(self):
         """The appropriate setup for the appropriate test."""
+        add_user_group()
         self.users = [UserFactory.create() for i in range(20)]
         self.photos = [PhotoFactory.create() for i in range(20)]
         self.albums = [AlbumFacotory.create() for i in range(20)]
@@ -270,6 +288,7 @@ class FrontEndTestCase(TestCase):
         """Set up client and requestfactory."""
         self.client = Client()
         self.request = RequestFactory()
+        add_user_group()
         self.users = [UserFactory.create() for i in range(20)]
         self.photos = [PhotoFactory.create() for i in range(20)]
         self.albums = [AlbumFacotory.create() for i in range(20)]
@@ -284,35 +303,33 @@ class FrontEndTestCase(TestCase):
     """
     def test_libary_view_returns_200(self):
         """Test Library View returns a 200."""
-        user = UserFactory.create()
-        user.save()
+        user = self.users[0]
         view = Library.as_view()
-        req = self.request.get(reverse_lazy('library'))
+        req = self.request.get(reverse_lazy('imager_images:library'))
         req.user = user
         response = view(req)
         self.assertTrue(response.status_code == 200)
 
     def test_logged_in_user_has_library(self):
         """A logged in user gets a 200 resposne."""
-        user = UserFactory.create()
-        user.save()
+        user = self.users[0]
         self.client.force_login(user)
-        response = self.client.get(reverse_lazy("library"))
+        response = self.client.get(reverse_lazy("imager_images:library"))
         self.assertTrue(response.status_code == 200)
 
     def test_logged_in_user_sees_their_albums(self):
         """Test that a logged in user can see their images in library."""
-        user = UserFactory.create()
+        user = self.users[0]
         album1 = Album.objects.first()
         user.albums.add(album1)
         user.save()
         self.client.force_login(user)
-        response = self.client.get(reverse_lazy("library"))
+        response = self.client.get(reverse_lazy("imager_images:library"))
         self.assertTrue(album1.title in str(response.content))
 
     def test_album_view_returns_200(self):
         """Test that the album view returns a 200."""
-        response = self.client.get(reverse_lazy('AlbumsView'))
+        response = self.client.get(reverse_lazy('imager_images:AlbumsView'))
         self.assertTrue(response.status_code == 200)
 
     def test_photoid_view_returns_200(self):
@@ -325,7 +342,7 @@ class FrontEndTestCase(TestCase):
         )
         photo.image = image
         photo.save()
-        response = self.client.get(reverse_lazy('single_photo',
+        response = self.client.get(reverse_lazy('imager_images:single_photo',
                                                 kwargs={'photo_id': photo.id}))
         self.assertTrue(response.status_code == 200)
 
@@ -340,7 +357,7 @@ class FrontEndTestCase(TestCase):
         )
         photo.image = image
         photo.save()
-        response = self.client.get(reverse_lazy('single_photo',
+        response = self.client.get(reverse_lazy('imager_images:single_photo',
                                                 kwargs={'photo_id': photo.id}))
         self.assertTrue(response.status_code == 404)
 
@@ -359,7 +376,7 @@ class FrontEndTestCase(TestCase):
         )
         photo.image = image
         photo.save()
-        response = self.client.get(reverse_lazy('single_photo',
+        response = self.client.get(reverse_lazy('imager_images:single_photo',
                                                 kwargs={'photo_id': photo.id}))
         self.assertTrue(response.status_code == 200)
 
@@ -370,7 +387,7 @@ class FrontEndTestCase(TestCase):
         album = self.albums[9]
         album.user = user
         album.save()
-        response = self.client.get(reverse_lazy('AlbumView',
+        response = self.client.get(reverse_lazy('imager_images:AlbumView',
                                                 kwargs={'album_id': album.id}))
         self.assertTrue(response.status_code == 200)
 
@@ -382,14 +399,14 @@ class FrontEndTestCase(TestCase):
         album.save()
         # Album.objects.get(id=album.id)
         # import pdb; pdb.set_trace()
-        response = self.client.get(reverse_lazy('AlbumView',
+        response = self.client.get(reverse_lazy('imager_images:AlbumView',
                                                 kwargs={'album_id': album.id}))
         self.assertTrue(response.status_code == 404)
 
     def test_description_of_album_shows(self):
         """Test that the description of an album shows."""
         album = self.albums[17]
-        response = self.client.get(reverse_lazy('AlbumView',
+        response = self.client.get(reverse_lazy('imager_images:AlbumView',
                                                 kwargs={'album_id': album.id}))
         self.assertTrue('is an album' in response.content.decode())
 
@@ -403,7 +420,7 @@ class FrontEndTestCase(TestCase):
         )
         photo.image = image
         photo.save()
-        response = self.client.get(reverse_lazy('single_photo',
+        response = self.client.get(reverse_lazy('imager_images:single_photo',
                                                 kwargs={'photo_id': photo.id}))
         self.assertTrue('is a photo' in response.content.decode())
 
@@ -417,6 +434,6 @@ class FrontEndTestCase(TestCase):
         )
         photo.image = image
         photo.save()
-        response = self.client.get(reverse_lazy('single_photo',
+        response = self.client.get(reverse_lazy('imager_images:single_photo',
                                                 kwargs={'photo_id': photo.id}))
         self.assertTrue('Photo number' in response.content.decode())

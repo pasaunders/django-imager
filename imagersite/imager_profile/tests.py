@@ -1,9 +1,25 @@
 """Tests for the imager_profile app."""
 from django.test import TestCase, Client, RequestFactory
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group, Permission
 from imager_profile.models import ImagerProfile
 import factory
 from faker import Faker
+
+
+def add_user_group():
+    """Add user group with permissions to testing database."""
+    new_group, created = Group.objects.get_or_create(name='user')
+    permission1 = Permission.objects.get(name='Can add album')
+    permission2 = Permission.objects.get(name='Can change album')
+    permission3 = Permission.objects.get(name='Can delete album')
+    permission4 = Permission.objects.get(name='Can add photo')
+    permission5 = Permission.objects.get(name='Can change photo')
+    permission6 = Permission.objects.get(name='Can delete photo')
+    new_group.permissions.add(
+        permission1, permission2, permission3,
+        permission4, permission5, permission6
+    )
+    new_group.save()
 
 
 class UserFactory(factory.django.DjangoModelFactory):
@@ -17,7 +33,6 @@ class UserFactory(factory.django.DjangoModelFactory):
     username = factory.Sequence(lambda n: "Prisoner number {}".format(n))
     email = factory.LazyAttribute(
         lambda x: "{}@foo.com".format(x.username.replace(" ", ""))
-
     )
 
 
@@ -26,6 +41,7 @@ class ProfileTestCase(TestCase):
 
     def setUp(self):
         """The appropriate setup for the appropriate test."""
+        add_user_group()
         self.users = [UserFactory.create() for i in range(20)]
         for profile in ImagerProfile.objects.all():
             self.fake_profile_attrs(profile)
@@ -68,10 +84,6 @@ class ProfileTestCase(TestCase):
         user = User.objects.get(pk=self.users[0].id)
         self.assertTrue(user.profile.bio)
 
-    # def test_user_model_has_attributes(self):   add more of these!
-    #     """Test user attributes are present."""
-    #     user = User.objects.get(pk=self.users[0].id)
-
     def test_active_users_counted(self):
         """Test acttive user count meets expectations."""
         self.assertTrue(ImagerProfile.active.count() == User.objects.count())
@@ -105,6 +117,7 @@ class FrontendTestCases(TestCase):
 
     def test_login_redirect_code(self):
         """Test built-in login route redirects properly."""
+        add_user_group()
         user_register = UserFactory.create()
         user_register.is_active = True
         user_register.username = "username"
@@ -119,6 +132,7 @@ class FrontendTestCases(TestCase):
 
     def test_register_user(self):
         """Test that tests can register users."""
+        add_user_group()
         self.assertTrue(User.objects.count() == 0)
         self.client.post("/accounts/register/", {
             "username": "Sir_Joseph",
@@ -130,6 +144,7 @@ class FrontendTestCases(TestCase):
 
     def test_new_user_inactive(self):
         """Test django-created user starts as inactive."""
+        add_user_group()
         self.client.post("/accounts/register/", {
             "username": "Sir_Joseph",
             "email": "e@mail.com",
@@ -141,6 +156,7 @@ class FrontendTestCases(TestCase):
 
     def test_registration_redirect(self):
         """Test redirect on registration."""
+        add_user_group()
         response = self.client.post("/accounts/register/", {
             "username": "Sir_Joseph",
             "email": "e@mail.com",
@@ -151,6 +167,7 @@ class FrontendTestCases(TestCase):
 
     def test_registration_reidrect_home(self):
         """Test registration redirects home."""
+        add_user_group()
         response = self.client.post("/accounts/register/", {
             "username": "Sir_Joseph",
             "email": "e@mail.com",

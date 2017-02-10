@@ -72,6 +72,7 @@ class ImagerProfile(models.Model):
 def make_profile_for_user(sender, instance, **kwargs):
     """Called when user is made and hooks that user to a profile."""
     if kwargs["created"]:
+        # import pdb; pdb.set_trace()
         group = Group.objects.get(name="user")
         instance.groups.add(group)
         new_profile = ImagerProfile(user=instance)

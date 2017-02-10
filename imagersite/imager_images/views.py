@@ -117,7 +117,6 @@ class AddAlbum(PermissionRequiredMixin, CreateView):
     template_name = "imager_images/add_album.html"
     model = Album
     fields = ['title', "cover", "description", "photos", "published", "date_published"]
-    # import pdb; pdb.set_trace()
     success_url = reverse_lazy('imager_images:library')
 
     def form_valid(self, form):
@@ -146,7 +145,6 @@ class AddPhoto(PermissionRequiredMixin, CreateView):
     template_name = "imager_images/add_photo.html"
     model = Photo
     fields = ['image', 'title', 'description', 'date_published', 'published', 'tags']
-    # success_url = '/images/library'
     success_url = reverse_lazy('imager_images:library')
 
     def form_valid(self, form):
