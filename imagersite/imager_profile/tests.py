@@ -1,9 +1,10 @@
 """Tests for the imager_profile app."""
 from django.test import TestCase, Client, RequestFactory
 from django.contrib.auth.models import User, Group, Permission
-from imager_profile.models import ImagerProfile, ActiveProfileManager
+from imager_profile.models import ImagerProfile
 import factory
 from faker import Faker
+from django.core.urlresolvers import reverse_lazy
 
 
 def add_user_group():
@@ -30,7 +31,7 @@ class UserFactory(factory.django.DjangoModelFactory):
 
         model = User
 
-    username = factory.Sequence(lambda n: "Prisoner number {}".format(n))
+    username = factory.Sequence(lambda n: "Prisoner_number_{}".format(n))
     email = factory.LazyAttribute(
         lambda x: "{}@foo.com".format(x.username.replace(" ", ""))
     )
@@ -184,3 +185,18 @@ class FrontendTestCases(TestCase):
             response,
             "/accounts/register/complete/"
         )
+
+    def test_profile_renders(self):
+        """Test public profile route response is 200."""
+        add_user_group()
+        user = UserFactory.create()
+        response = self.client.get(reverse_lazy('public_profile', kwargs={'username': user.username}))
+        self.assertTrue(response.status_code == 200)
+
+    def test_logged_in_user_profile(self):
+        """Test the logged in user goes to private profile."""
+        add_user_group()
+        user = UserFactory.create()
+        self.client.force_login(user)
+        response = self.client.get(reverse_lazy('private_profile'))
+        self.assertTrue(response.status_code == 200)
