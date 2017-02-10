@@ -3,7 +3,7 @@ from imager_images.models import Photo, Album
 from django.http import HttpResponse  # reimplement if we get around to fixing the views, otherwise use below.
 from django.http import Http404
 from django.views.generic import ListView, TemplateView, CreateView, UpdateView
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
 import random
 
@@ -117,7 +117,8 @@ class AddAlbum(PermissionRequiredMixin, CreateView):
     template_name = "imager_images/add_album.html"
     model = Album
     fields = ['title', "cover", "description", "photos", "published", "date_published"]
-    success_url = reverse_lazy('library')
+    # import pdb; pdb.set_trace()
+    success_url = reverse_lazy('imager_images:library')
 
     def form_valid(self, form):
         """Make the form user instance the current user."""
@@ -133,7 +134,7 @@ class EditAlbum(PermissionRequiredMixin, UpdateView):
     template_name = "imager_images/add_album.html"
     model = Album
     fields = ['title', "cover", "description", "photos", "published", "date_published"]
-    success_url = reverse_lazy('library')
+    success_url = reverse_lazy('imager_images:library')
 
 
 class AddPhoto(PermissionRequiredMixin, CreateView):
