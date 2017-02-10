@@ -9,7 +9,7 @@ from django.dispatch import receiver
 # Create your models here.
 
 
-class ActiveProfileManager(models.Manager):
+class ActiveProfileManager(models.Manager):  # pragma: no cover
     """Create Model Manager for Active Profiles."""
 
     def get_queryset(self):
@@ -59,7 +59,7 @@ class ImagerProfile(models.Model):
     )
 
     @property
-    def is_active(self):
+    def is_active(self):  # pragma: no cover
         """Return True if user associated with this profile is active."""
         return self.user.is_active
 

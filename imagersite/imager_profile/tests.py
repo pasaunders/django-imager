@@ -1,7 +1,7 @@
 """Tests for the imager_profile app."""
 from django.test import TestCase, Client, RequestFactory
 from django.contrib.auth.models import User, Group, Permission
-from imager_profile.models import ImagerProfile
+from imager_profile.models import ImagerProfile, ActiveProfileManager
 import factory
 from faker import Faker
 
@@ -94,6 +94,12 @@ class ProfileTestCase(TestCase):
         deactivated_user.is_active = False
         deactivated_user.save()
         self.assertTrue(ImagerProfile.active.count() == User.objects.count() - 1)
+
+    def test_user_in_group(self):
+        """Test that on creation of user add them to user group."""
+        user = self.users[5]
+        group = user.groups.all()[0]
+        self.assertTrue(group.name == 'user')
 
 
 class FrontendTestCases(TestCase):
