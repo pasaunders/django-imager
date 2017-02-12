@@ -3,8 +3,9 @@ from imager_images.models import Photo, Album
 from django.http import HttpResponse  # reimplement if we get around to fixing the views, otherwise use below.
 from django.http import Http404
 from django.views.generic import ListView, TemplateView, CreateView, UpdateView
-from django.urls import reverse_lazy, reverse
+from django.urls import reverse_lazy
 from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 import random
 
 
@@ -45,7 +46,17 @@ class PhotosView(TemplateView):
         for photo in photos:
             if photo.published != 'private' or photo.user.username == self.request.user.username:
                 public_photos.append(photo)
-        return {"photos": public_photos}
+        this_page = self.request.GET.get("page", 1)
+        pages = Paginator(public_photos, 4)
+
+        try:
+            photos = pages.page(this_page)
+        except PageNotAnInteger:
+            photos = pages.page(1)
+        except EmptyPage:
+            photos = pages.page(pages.num_pages)
+
+        return {"photos": photos}
 
 
 class TagListView(ListView):
