@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'taggit',
     'rest_framework',
     'imager_api.apps.ImagerApiConfig',
+    'query_parameters'
 ]
 
 MIDDLEWARE = [

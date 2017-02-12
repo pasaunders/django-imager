@@ -2,6 +2,7 @@ coverage==4.3.4
 decorator==4.0.11
 Django==1.10.5
 django-bootstrap3==8.1.0
+django-query-parameters==0.2.2
 django-registration==2.2
 django-taggit==0.22.0
 djangorestframework==3.5.3

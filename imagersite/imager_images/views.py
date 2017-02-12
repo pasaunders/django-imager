@@ -137,6 +137,19 @@ class Library(LoginRequiredMixin, TemplateView):
         """Return albums."""
         albums = self.request.user.albums.all()
         photos = self.request.user.photos.all()
+        albums_page = self.request.GET.get("albums_page", 1)
+        photos_page = self.request.GET.get("photos_page", 1)
+        albums_pages = Paginator(albums, 4)
+        photos_pages = Paginator(photos, 4)
+        try:
+            albums = albums_pages.page(albums_page)
+            photos = photos_pages.page(photos_page)
+        except PageNotAnInteger:
+            albums = albums_pages.page(1)
+            photos = photos_pages.page(1)
+        except EmptyPage:
+            albums = albums_pages.page(albums_pages.num_pages)
+            photos = photos_pages.page(photos_pages.num_pages)
         return {'albums': albums, 'photos': photos}
 
 
