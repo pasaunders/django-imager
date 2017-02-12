@@ -85,7 +85,18 @@ class AlbumView(ListView):
         """Return album."""
         album = Album.objects.get(id=self.kwargs['album_id'])
         if album.published != 'private' or album.user.username == self.request.user.username:
-            return {'album': album}
+            photos = album.photos.all()
+            cover = album.cover
+            this_page = self.request.GET.get("page", 1)
+            pages = Paginator(photos, 4)
+
+            try:
+                photos = pages.page(this_page)
+            except PageNotAnInteger:
+                photos = pages.page(1)
+            except EmptyPage:
+                photos = pages.page(pages.num_pages)
+            return {'photos': photos, 'cover': cover}
         else:
             raise Http404('Unauthorized')
         return {}
