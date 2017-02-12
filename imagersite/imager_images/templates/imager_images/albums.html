@@ -5,11 +5,32 @@
 <div>
 {% for album in albums %}
 <h1>{{ album.title }}</h1>
-<a href="albums/{{ album.id }}">
+<a href="{% url 'imager_images:AlbumView' album.id %}">
 {% thumbnail album.cover.image "200x200" crop="center" as im %}
     <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
 {% endthumbnail %}
 </a>
 {% endfor %}
 </div>
+<ul class="pagination">
+{% if albums.has_previous %}
+  <li><a href="?page={{ albums.previous_page_number }}">&laquo;</a></li>
+{% else %}
+  <li class="disabled"><a href="#">&laquo;</a></li>
+{% endif %}
+
+{% for num in albums.paginator.page_range %}
+  {% ifequal num albums.number %}
+    <li class="active"><a href="#">{{ num }}<span class="sr-only">(current)</span></a></li>
+  {% else %}
+    <li><a href="?page={{ num }}">{{ num }}</a></li>
+  {% endifequal %}
+{% endfor %}
+
+{% if albums.has_next %}
+  <li><a href="?page={{ albums.next_page_number }}">&raquo;</a></li>
+{% else %}
+  <li class="disabled"><a href="#">&raquo;</a></li>
+{% endif %}
+<ul>
 {% endblock content %}

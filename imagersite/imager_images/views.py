@@ -114,6 +114,15 @@ class AlbumsView(TemplateView):
         for album in albums:
             if album.published != 'private' or album.user.username == self.request.user.username:
                 public_albums.append(album)
+        this_page = self.request.GET.get("page", 1)
+        pages = Paginator(public_albums, 4)
+
+        try:
+            public_albums = pages.page(this_page)
+        except PageNotAnInteger:
+            public_albums = pages.page(1)
+        except EmptyPage:
+            public_albums = pages.page(pages.num_pages)
         return {'albums': public_albums}
 
 
