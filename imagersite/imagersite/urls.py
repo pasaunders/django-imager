@@ -35,5 +35,6 @@ urlpatterns = [
     url(r'^logout/', auth.views.logout, {'next_page': '/'}, name='logout'),
     url(r'^profile/', include('imager_profile.urls')),
     url(r'^images/', include('imager_images.urls')),
-    url(r'^api/v1/', include(router.urls))
+    url(r'^api/v1/', include(router.urls)),
+    url(r'^oauth/', include('social_django.urls', namespace='social'))
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
