@@ -408,7 +408,7 @@ class FrontEndTestCase(TestCase):
         album = self.albums[17]
         response = self.client.get(reverse_lazy('imager_images:AlbumView',
                                                 kwargs={'album_id': album.id}))
-        self.assertTrue('is an album' in response.content.decode())
+        self.assertTrue('Your Album:' in response.content.decode())
 
     def test_description_of_photo_shows(self):
         """Test that the description of a photo shows."""
