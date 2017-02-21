@@ -1,12 +1,13 @@
 """Models for imager_profile."""
 
 from django.db import models
-from django.contrib.auth.models import User, Group
+from django.contrib.auth.models import User, Group, Permission
+from django.contrib.contenttypes.models import ContentType
 from django.utils.encoding import python_2_unicode_compatible
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, post_migrate
 from django.dispatch import receiver
-
-# Create your models here.
+from django.contrib.auth.management import create_permissions
+from django.apps import apps
 
 
 class ActiveProfileManager(models.Manager):  # pragma: no cover
@@ -72,8 +73,23 @@ class ImagerProfile(models.Model):
 def make_profile_for_user(sender, instance, **kwargs):
     """Called when user is made and hooks that user to a profile."""
     if kwargs["created"]:
-        # import pdb; pdb.set_trace()
         group = Group.objects.get(name="user")
         instance.groups.add(group)
         new_profile = ImagerProfile(user=instance)
         new_profile.save()
+
+
+@receiver(post_migrate)
+def create_group(**kwargs):
+    """On migration create group if it doesn't exists."""
+    for app_config in apps.get_app_configs():
+        app_config.models_module = True
+        create_permissions(app_config, apps=apps, verbosity=0)
+        app_config.models_module = None
+    group, created = Group.objects.get_or_create(name='user')
+    imager_content_type = ContentType.objects.get(app_label='imager_profile')
+    permissions = Permission.objects.filter(content_type=imager_content_type)
+    if created:
+        for permission in permissions:
+            group.permissions.add(permission)
+        group.save()
