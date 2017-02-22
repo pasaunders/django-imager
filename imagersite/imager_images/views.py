@@ -1,6 +1,5 @@
 """Views for images."""
 from imager_images.models import Photo, Album
-from django.http import HttpResponse  # reimplement if we get around to fixing the views, otherwise use below.
 from django.http import Http404
 from django.views.generic import ListView, TemplateView, CreateView, UpdateView
 from django.urls import reverse_lazy

@@ -5,7 +5,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from imager_images.models import Photo, Album
 import factory
 from django.core.urlresolvers import reverse_lazy
-from .views import PhotosView, AlbumView, AlbumsView, Library, PhotoView, AddAlbum, AddPhoto, EditAlbum, EditPhoto
+from .views import Library
 from bs4 import BeautifulSoup
 
 
@@ -148,7 +148,6 @@ class PhotoTestCase(TestCase):
     def test_user_has_photo_uploaded(self):
         """Test user has photo uploaded."""
         photo = self.photos[4]
-        # self.assertTrue(photo.image.name is None)
         image = SimpleUploadedFile(
             name='test_image.jpg',
             content=open('imager_images/test_img.jpg', 'rb').read(),
