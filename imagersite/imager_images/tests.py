@@ -440,8 +440,13 @@ class FrontEndTestCase(TestCase):
         add_user_group()
         user = UserFactory.create()
         self.client.force_login(user)
+        for photo in self.photos:
+            photo.user = user
+            photo.save()
+        for album in self.albums:
+            album.user = user
+            album.save()
         html = self.client.get(reverse_lazy('imager_images:library')).content
         parsed_html = BeautifulSoup(html, "html5lib")
-        import pdb; pdb.set_trace()
-        self.assertTrue(len(parsed_html.find_all('h1')) == 5)
+        self.assertTrue(len(parsed_html.section.find_all('h3')) == 5)
         self.assertTrue(len(parsed_html.find_all('img')) == 4)
