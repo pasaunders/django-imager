@@ -121,9 +121,6 @@ AUTH_PASSWORD_VALIDATORS = [
 
 AUTHENTICATION_BACKENDS = (
     'social_core.backends.github.GithubOAuth2',
-    'social_core.backends.twitter.TwitterOAuth',
-    'social_core.backends.facebook.FacebookOAuth2',
-
     'django.contrib.auth.backends.ModelBackend',
 )
 
@@ -131,11 +128,7 @@ SOCIAL_AUTH_GITHUB_KEY = os.environ["GITHUB_APP_ID"]
 SOCIAL_AUTH_GITHUB_SECRET = os.environ["GITHUB_APP_SECRET"]
 LOGIN_URL = 'login'
 LOGOUT_URL = 'logout'
-# REDIRECT_FIELD_NAME = 
-# LOGIN_REDIRECT_URL = 'homepage'
 
-# Internationalization
-# https://docs.djangoproject.com/en/1.10/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
 
