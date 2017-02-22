@@ -200,3 +200,36 @@ class FrontendTestCases(TestCase):
         self.client.force_login(user)
         response = self.client.get(reverse_lazy('private_profile'))
         self.assertTrue(response.status_code == 200)
+
+    def test_edit_profile_status(self):
+        """Test edit profile has 200 status."""
+        add_user_group()
+        user = UserFactory.create()
+        self.client.force_login(user)
+        response = self.client.get(reverse_lazy('edit-profile'))
+        self.assertTrue(response.status_code == 200)
+
+    def test_edit_profile_correct_template(self):
+        """Test edit profile correct template."""
+        add_user_group()
+        user = UserFactory.create()
+        self.client.force_login(user)
+        response = self.client.get(reverse_lazy('edit-profile'))
+        self.assertTemplateUsed(response, "imagersite/base.html")
+        self.assertTemplateUsed(response, "imager_profile/edit_profile.html")
+
+    def test_correct_html_in_template(self):
+        """Test correct html in template."""
+        add_user_group()
+        user = UserFactory.create()
+        self.client.force_login(user)
+        response = self.client.get(reverse_lazy('edit-profile'))
+        self.assertTrue('input' in str(response.content))
+        self.assertTrue('Address' in str(response.content))
+        self.assertTrue('Camera type' in str(response.content))
+        self.assertTrue('Phone number' in str(response.content))
+
+    def test_not_logged_in_redirects_to_login_page(self):
+        """Test not logged in redirects to login page."""
+        response = self.client.get(reverse_lazy('edit-profile'))
+        self.assertRedirects(response, '/login/?next=/profile/edit')
