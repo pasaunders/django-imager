@@ -42,7 +42,8 @@ class PhotosView(TemplateView):
     def get_context_data(self):
         """Return photos."""
         public_photos = [x for x in Photo.objects.filter(published='public')]
-        public_photos += [x for x in Photo.objects.filter(user=self.request.user) if x not in public_photos]
+        if self.request.user.is_authenticated():
+            public_photos += [x for x in Photo.objects.filter(user=self.request.user) if x not in public_photos]
         this_page = self.request.GET.get("page", 1)
         pages = Paginator(public_photos, 4)
 
