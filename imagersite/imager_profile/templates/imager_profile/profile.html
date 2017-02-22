@@ -21,6 +21,7 @@
 {% if user.is_authenticated %}
 <a class="btn" href="{% url 'imager_images:AddPhoto' %}"><button type="button" class="btn btn-primary">Add Photo</button>
 <a class="btn" href="{% url 'imager_images:AddAlbum' %}"><button type="button" class="btn btn-primary">Add Album</button>
+<a class="btn" href="{% url 'edit-profile' %}"><button type="button" class="btn btn-primary">Edit Profile</button>
 </a>
 {% endif %}
 </section>

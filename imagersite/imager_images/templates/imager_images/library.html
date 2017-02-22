@@ -1,7 +1,9 @@
 {% extends 'imagersite/base.html' %}
 {% load thumbnail %}
+{% load query_parameters %}
 {% block content %}
-<section>
+<div>
+    <section>
     {% if user.first_name %}
     <h2>{{user.first_name|title }}'s Library</h2>
     {% else %}
@@ -15,8 +17,35 @@
     <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
     {% endthumbnail %}
     </a>
-    <a class="btn" href="/images/albums/{{ album.id }}/edit/"><button type="button" class="btn btn-primary btn-sm">Edit Album</button>
+    <a class="btn" href="/images/albums/{{ album.id }}/edit/"><button type="button" class="btn btn-primary btn-sm">Edit Album</button></a>
     {% endfor %}
+    </section>
+    <ul class="pagination">
+    {% if albums.has_previous %}
+        {% set_query_parameters albums_page=albums.previous_page_number as=prev_page %}
+      <li><a href="?{{ prev_page }}">&laquo;</a></li>
+    {% else %}
+      <li class="disabled"><a href="#">&laquo;</a></li>
+    {% endif %}
+
+    {% for num in albums.paginator.page_range %}
+      {% ifequal num albums.number %}
+        <li class="active"><a href="#">{{ num }}<span class="sr-only">(current)</span></a></li>
+      {% else %}
+          {% set_query_parameters albums_page=num as=page_num %}
+        <li><a href="?{{ page_num }}">{{ num }}</a></li>
+      {% endifequal %}
+    {% endfor %}
+
+    {% if albums.has_next %}
+        {% set_query_parameters albums_page=albums.next_page_number as=next_page %}
+      <li><a href="?{{ albums.next_page_number }}">&raquo;</a></li>
+    {% else %}
+      <li class="disabled"><a href="#">&raquo;</a></li>
+    {% endif %}
+    <ul>
+
+    <section>
     <h3>Images:</h3>
     {% for photo in photos %}
     <a href="{% url 'imager_images:single_photo' photo.id %}">
@@ -30,7 +59,32 @@
         <a href="{% url "imager_images:tagged_photos" tag.slug %}">{{ tag }}</a>
     {% endfor %}
     {% endfor %}
-</section>
+    </section>
+    <ul class="pagination">
+    {% if photos.has_previous %}
+        {% set_query_parameters photos_page=photos.previous_page_number as=prev_page %}
+      <li><a href="?{{ prev_page }}">&laquo;</a></li>
+    {% else %}
+      <li class="disabled"><a href="#">&laquo;</a></li>
+    {% endif %}
+
+    {% for num in photos.paginator.page_range %}
+      {% ifequal num photos.number %}
+        <li class="active"><a href="#">{{ num }}<span class="sr-only">(current)</span></a></li>
+      {% else %}
+        {% set_query_parameters photos_page=num as=page_num %}
+        <li><a href="?{{ page_num }}">{{ num }}</a></li>
+      {% endifequal %}
+    {% endfor %}
+
+    {% if photos.has_next %}
+        {% set_query_parameters photos_page=photos.next_page_number as=next_page %}
+      <li><a href="?{{ next_page }}">&raquo;</a></li>
+    {% else %}
+      <li class="disabled"><a href="#">&raquo;</a></li>
+    {% endif %}
+    <ul>
+</div>
 {% endblock content %}
 
 {% url 'imager_images:edit_photo' single_photo.id %}

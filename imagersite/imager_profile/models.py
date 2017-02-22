@@ -1,15 +1,16 @@
 """Models for imager_profile."""
 
 from django.db import models
-from django.contrib.auth.models import User, Group
+from django.contrib.auth.models import User, Group, Permission
+from django.contrib.contenttypes.models import ContentType
 from django.utils.encoding import python_2_unicode_compatible
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, post_migrate
 from django.dispatch import receiver
+from django.contrib.auth.management import create_permissions
+from django.apps import apps
 
-# Create your models here.
 
-
-class ActiveProfileManager(models.Manager):
+class ActiveProfileManager(models.Manager):  # pragma: no cover
     """Create Model Manager for Active Profiles."""
 
     def get_queryset(self):
@@ -59,7 +60,7 @@ class ImagerProfile(models.Model):
     )
 
     @property
-    def is_active(self):
+    def is_active(self):  # pragma: no cover
         """Return True if user associated with this profile is active."""
         return self.user.is_active
 
@@ -76,3 +77,22 @@ def make_profile_for_user(sender, instance, **kwargs):
         instance.groups.add(group)
         new_profile = ImagerProfile(user=instance)
         new_profile.save()
+
+
+@receiver(post_migrate)
+def create_group(**kwargs):
+    """On migration create group if it doesn't exists."""
+    for app_config in apps.get_app_configs():
+        app_config.models_module = True
+        create_permissions(app_config, apps=apps, verbosity=0)
+        app_config.models_module = None
+    group, created = Group.objects.get_or_create(name='user')
+    imager_content_types = [x for x in ContentType.objects.filter(app_label='imager_images')]
+    imager_content_types += [x for x in ContentType.objects.filter(app_label='imager_profile')]
+    permissions = []
+    for content_type in imager_content_types:
+        permissions.extend([x for x in Permission.objects.filter(content_type=content_type)])
+    if created:
+        for permission in permissions:
+            group.permissions.add(permission)
+        group.save()

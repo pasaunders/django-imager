@@ -1,11 +1,28 @@
 """Test the imager_images app."""
 from django.test import TestCase, Client, RequestFactory
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group, Permission
 from django.core.files.uploadedfile import SimpleUploadedFile
 from imager_images.models import Photo, Album
 import factory
 from django.core.urlresolvers import reverse_lazy
-from .views import PhotosView, AlbumView, AlbumsView, Library, PhotoView, AddAlbum, AddPhoto, EditAlbum, EditPhoto
+from .views import Library
+from bs4 import BeautifulSoup
+
+
+def add_user_group():
+    """Add user group with permissions to testing database."""
+    new_group, created = Group.objects.get_or_create(name='user')
+    permission1 = Permission.objects.get(name='Can add album')
+    permission2 = Permission.objects.get(name='Can change album')
+    permission3 = Permission.objects.get(name='Can delete album')
+    permission4 = Permission.objects.get(name='Can add photo')
+    permission5 = Permission.objects.get(name='Can change photo')
+    permission6 = Permission.objects.get(name='Can delete photo')
+    new_group.permissions.add(
+        permission1, permission2, permission3,
+        permission4, permission5, permission6
+    )
+    new_group.save()
 
 
 class UserFactory(factory.django.DjangoModelFactory):
@@ -33,6 +50,11 @@ class PhotoFactory(factory.django.DjangoModelFactory):
     user = factory.SubFactory(UserFactory)
     title = factory.Sequence(lambda n: "Photo number {}".format(n))
     description = factory.LazyAttribute(lambda a: '{} is a photo'.format(a.title))
+    image = SimpleUploadedFile(
+        name='test_image.jpg',
+        content=open('imager_images/test_img.jpg', 'rb').read(),
+        content_type='image/jpeg'
+    )
 
 
 class AlbumFacotory(factory.django.DjangoModelFactory):
@@ -54,6 +76,7 @@ class PhotoTestCase(TestCase):
 
     def setUp(self):
         """The appropriate setup for the appropriate test."""
+        add_user_group()
         self.users = [UserFactory.create() for i in range(20)]
         self.photos = [PhotoFactory.create() for i in range(20)]
 
@@ -125,13 +148,11 @@ class PhotoTestCase(TestCase):
     def test_user_has_photo_uploaded(self):
         """Test user has photo uploaded."""
         photo = self.photos[4]
-        # self.assertTrue(photo.image.name is None)
         image = SimpleUploadedFile(
             name='test_image.jpg',
             content=open('imager_images/test_img.jpg', 'rb').read(),
             content_type='image/jpeg'
         )
-        # import pdb; pdb.set_trace()
         photo.image = image
         self.assertTrue(photo.image.name is not None)
 
@@ -141,9 +162,10 @@ class AlbumTestCase(TestCase):
 
     def setUp(self):
         """The appropriate setup for the appropriate test."""
+        add_user_group()
         self.users = [UserFactory.create() for i in range(20)]
-        self.photos = [PhotoFactory.create() for i in range(20)]
         self.albums = [AlbumFacotory.create() for i in range(20)]
+        self.photos = [PhotoFactory.create() for i in range(20)]
 
     def test_image_has_no_album(self):
         """Test that the image is in an album."""
@@ -270,62 +292,46 @@ class FrontEndTestCase(TestCase):
         """Set up client and requestfactory."""
         self.client = Client()
         self.request = RequestFactory()
+        add_user_group()
         self.users = [UserFactory.create() for i in range(20)]
-        self.photos = [PhotoFactory.create() for i in range(20)]
         self.albums = [AlbumFacotory.create() for i in range(20)]
+        self.photos = [PhotoFactory.create() for i in range(20)]
 
-    """
-    To test:
-        Views return 200
-        Routes return 200
-        all four templates are used
-        albums are visible in albums.html
-        correct number of photos and albums are visible
-    """
     def test_libary_view_returns_200(self):
         """Test Library View returns a 200."""
-        user = UserFactory.create()
-        user.save()
+        user = self.users[0]
         view = Library.as_view()
-        req = self.request.get(reverse_lazy('library'))
+        req = self.request.get(reverse_lazy('imager_images:library'))
         req.user = user
         response = view(req)
         self.assertTrue(response.status_code == 200)
 
     def test_logged_in_user_has_library(self):
         """A logged in user gets a 200 resposne."""
-        user = UserFactory.create()
-        user.save()
+        user = self.users[0]
         self.client.force_login(user)
-        response = self.client.get(reverse_lazy("library"))
+        response = self.client.get(reverse_lazy("imager_images:library"))
         self.assertTrue(response.status_code == 200)
 
     def test_logged_in_user_sees_their_albums(self):
         """Test that a logged in user can see their images in library."""
-        user = UserFactory.create()
+        user = self.users[0]
         album1 = Album.objects.first()
         user.albums.add(album1)
         user.save()
         self.client.force_login(user)
-        response = self.client.get(reverse_lazy("library"))
+        response = self.client.get(reverse_lazy("imager_images:library"))
         self.assertTrue(album1.title in str(response.content))
 
     def test_album_view_returns_200(self):
         """Test that the album view returns a 200."""
-        response = self.client.get(reverse_lazy('AlbumsView'))
+        response = self.client.get(reverse_lazy('imager_images:AlbumsView'))
         self.assertTrue(response.status_code == 200)
 
     def test_photoid_view_returns_200(self):
         """Test that the photo id view returns a 200."""
         photo = self.photos[6]
-        image = SimpleUploadedFile(
-            name='test_image.jpg',
-            content=open('imager_images/test_img.jpg', 'rb').read(),
-            content_type='image/jpeg'
-        )
-        photo.image = image
-        photo.save()
-        response = self.client.get(reverse_lazy('single_photo',
+        response = self.client.get(reverse_lazy('imager_images:single_photo',
                                                 kwargs={'photo_id': photo.id}))
         self.assertTrue(response.status_code == 200)
 
@@ -333,14 +339,8 @@ class FrontEndTestCase(TestCase):
         """Test that a user cannot view a private photo of another user."""
         photo = self.photos[12]
         photo.published = 'private'
-        image = SimpleUploadedFile(
-            name='test_image.jpg',
-            content=open('imager_images/test_img.jpg', 'rb').read(),
-            content_type='image/jpeg'
-        )
-        photo.image = image
         photo.save()
-        response = self.client.get(reverse_lazy('single_photo',
+        response = self.client.get(reverse_lazy('imager_images:single_photo',
                                                 kwargs={'photo_id': photo.id}))
         self.assertTrue(response.status_code == 404)
 
@@ -359,7 +359,7 @@ class FrontEndTestCase(TestCase):
         )
         photo.image = image
         photo.save()
-        response = self.client.get(reverse_lazy('single_photo',
+        response = self.client.get(reverse_lazy('imager_images:single_photo',
                                                 kwargs={'photo_id': photo.id}))
         self.assertTrue(response.status_code == 200)
 
@@ -370,53 +370,82 @@ class FrontEndTestCase(TestCase):
         album = self.albums[9]
         album.user = user
         album.save()
-        response = self.client.get(reverse_lazy('AlbumView',
+        response = self.client.get(reverse_lazy('imager_images:AlbumView',
                                                 kwargs={'album_id': album.id}))
         self.assertTrue(response.status_code == 200)
 
     def test_album_id_view_doesnt_return_private_album(self):
         """Test that a user cannot view a private album."""
         album = self.albums[9]
-        # import pdb; pdb.set_trace()
         album.published = 'private'
         album.save()
-        # Album.objects.get(id=album.id)
-        # import pdb; pdb.set_trace()
-        response = self.client.get(reverse_lazy('AlbumView',
+        response = self.client.get(reverse_lazy('imager_images:AlbumView',
                                                 kwargs={'album_id': album.id}))
         self.assertTrue(response.status_code == 404)
 
     def test_description_of_album_shows(self):
         """Test that the description of an album shows."""
         album = self.albums[17]
-        response = self.client.get(reverse_lazy('AlbumView',
+        response = self.client.get(reverse_lazy('imager_images:AlbumView',
                                                 kwargs={'album_id': album.id}))
-        self.assertTrue('is an album' in response.content.decode())
+        self.assertTrue('Your Album:' in response.content.decode())
 
     def test_description_of_photo_shows(self):
         """Test that the description of a photo shows."""
         photo = self.photos[17]
-        image = SimpleUploadedFile(
-            name='test_image.jpg',
-            content=open('imager_images/test_img.jpg', 'rb').read(),
-            content_type='image/jpeg'
-        )
-        photo.image = image
-        photo.save()
-        response = self.client.get(reverse_lazy('single_photo',
+        response = self.client.get(reverse_lazy('imager_images:single_photo',
                                                 kwargs={'photo_id': photo.id}))
         self.assertTrue('is a photo' in response.content.decode())
 
     def test_title_of_photo_shows(self):
         """Test that the title of an photo shows."""
         photo = self.photos[17]
-        image = SimpleUploadedFile(
-            name='test_image.jpg',
-            content=open('imager_images/test_img.jpg', 'rb').read(),
-            content_type='image/jpeg'
-        )
-        photo.image = image
-        photo.save()
-        response = self.client.get(reverse_lazy('single_photo',
+        response = self.client.get(reverse_lazy('imager_images:single_photo',
                                                 kwargs={'photo_id': photo.id}))
         self.assertTrue('Photo number' in response.content.decode())
+
+    def test_photo_pagination_html(self):
+        """Test that pagination-related html is in photo html."""
+        response = self.client.get(reverse_lazy('imager_images:photos'))
+        self.assertTrue('<ul class="pagination">' in str(response.content))
+
+    def test_photo_pagination_limit_four(self):
+        """Test that pagination limits photos to four thumbnails."""
+        html = self.client.get(reverse_lazy('imager_images:photos')).content
+        parsed_html = BeautifulSoup(html, "html5lib")
+        self.assertTrue(len(parsed_html.find_all('img')) == 4)
+
+    def test_album_pagination_html(self):
+        """Test that pagination-related html is in album html."""
+        response = self.client.get(reverse_lazy('imager_images:AlbumsView'))
+        self.assertTrue('<ul class="pagination">' in str(response.content))
+
+    def test_album_pagination_limit_four(self):
+        """Test that pagination limits photos to four albums at a time."""
+        html = self.client.get(reverse_lazy('imager_images:AlbumsView')).content
+        parsed_html = BeautifulSoup(html, "html5lib")
+        self.assertTrue(len(parsed_html.find_all('h1')) == 5)
+
+    def test_library_pagination_html(self):
+        """Test that pagination-related html is in library html."""
+        add_user_group()
+        user = UserFactory.create()
+        self.client.force_login(user)
+        response = self.client.get(reverse_lazy('imager_images:library'))
+        self.assertTrue('<ul class="pagination">' in str(response.content))
+
+    def test_library_pagination_limit_four(self):
+        """Test that library only shows four albums and four photos at a time."""
+        add_user_group()
+        user = UserFactory.create()
+        self.client.force_login(user)
+        for photo in self.photos:
+            photo.user = user
+            photo.save()
+        for album in self.albums:
+            album.user = user
+            album.save()
+        html = self.client.get(reverse_lazy('imager_images:library')).content
+        parsed_html = BeautifulSoup(html, "html5lib")
+        self.assertTrue(len(parsed_html.section.find_all('h3')) == 5)
+        self.assertTrue(len(parsed_html.find_all('img')) == 4)

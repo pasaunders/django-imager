@@ -1,10 +1,10 @@
 """Views for images."""
 from imager_images.models import Photo, Album
-from django.http import HttpResponse  # reimplement if we get around to fixing the views, otherwise use below.
 from django.http import Http404
 from django.views.generic import ListView, TemplateView, CreateView, UpdateView
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 import random
 
 
@@ -40,12 +40,20 @@ class PhotosView(TemplateView):
 
     def get_context_data(self):
         """Return photos."""
-        public_photos = []
-        photos = Photo.objects.all()
-        for photo in photos:
-            if photo.published != 'private' or photo.user.username == self.request.user.username:
-                public_photos.append(photo)
-        return {"photos": public_photos}
+        public_photos = [x for x in Photo.objects.filter(published='public')]
+        if self.request.user.is_authenticated():
+            public_photos += [x for x in Photo.objects.filter(user=self.request.user) if x not in public_photos]
+        this_page = self.request.GET.get("page", 1)
+        pages = Paginator(public_photos, 4)
+
+        try:
+            photos = pages.page(this_page)
+        except PageNotAnInteger:
+            photos = pages.page(1)
+        except EmptyPage:
+            photos = pages.page(pages.num_pages)
+
+        return {"photos": photos}
 
 
 class TagListView(ListView):
@@ -74,7 +82,18 @@ class AlbumView(ListView):
         """Return album."""
         album = Album.objects.get(id=self.kwargs['album_id'])
         if album.published != 'private' or album.user.username == self.request.user.username:
-            return {'album': album}
+            photos = album.photos.all()
+            cover = album.cover
+            this_page = self.request.GET.get("page", 1)
+            pages = Paginator(photos, 4)
+
+            try:
+                photos = pages.page(this_page)
+            except PageNotAnInteger:
+                photos = pages.page(1)
+            except EmptyPage:
+                photos = pages.page(pages.num_pages)
+            return {'photos': photos, 'cover': cover}
         else:
             raise Http404('Unauthorized')
         return {}
@@ -92,6 +111,15 @@ class AlbumsView(TemplateView):
         for album in albums:
             if album.published != 'private' or album.user.username == self.request.user.username:
                 public_albums.append(album)
+        this_page = self.request.GET.get("page", 1)
+        pages = Paginator(public_albums, 4)
+
+        try:
+            public_albums = pages.page(this_page)
+        except PageNotAnInteger:
+            public_albums = pages.page(1)
+        except EmptyPage:
+            public_albums = pages.page(pages.num_pages)
         return {'albums': public_albums}
 
 
@@ -106,6 +134,19 @@ class Library(LoginRequiredMixin, TemplateView):
         """Return albums."""
         albums = self.request.user.albums.all()
         photos = self.request.user.photos.all()
+        albums_page = self.request.GET.get("albums_page", 1)
+        photos_page = self.request.GET.get("photos_page", 1)
+        albums_pages = Paginator(albums, 4)
+        photos_pages = Paginator(photos, 4)
+        try:
+            albums = albums_pages.page(albums_page)
+            photos = photos_pages.page(photos_page)
+        except PageNotAnInteger:
+            albums = albums_pages.page(1)
+            photos = photos_pages.page(1)
+        except EmptyPage:
+            albums = albums_pages.page(albums_pages.num_pages)
+            photos = photos_pages.page(photos_pages.num_pages)
         return {'albums': albums, 'photos': photos}
 
 
@@ -117,7 +158,7 @@ class AddAlbum(PermissionRequiredMixin, CreateView):
     template_name = "imager_images/add_album.html"
     model = Album
     fields = ['title', "cover", "description", "photos", "published", "date_published"]
-    success_url = reverse_lazy('library')
+    success_url = reverse_lazy('imager_images:library')
 
     def form_valid(self, form):
         """Make the form user instance the current user."""
@@ -133,7 +174,7 @@ class EditAlbum(PermissionRequiredMixin, UpdateView):
     template_name = "imager_images/add_album.html"
     model = Album
     fields = ['title', "cover", "description", "photos", "published", "date_published"]
-    success_url = reverse_lazy('library')
+    success_url = reverse_lazy('imager_images:library')
 
 
 class AddPhoto(PermissionRequiredMixin, CreateView):
@@ -145,7 +186,6 @@ class AddPhoto(PermissionRequiredMixin, CreateView):
     template_name = "imager_images/add_photo.html"
     model = Photo
     fields = ['image', 'title', 'description', 'date_published', 'published', 'tags']
-    # success_url = '/images/library'
     success_url = reverse_lazy('imager_images:library')
 
     def form_valid(self, form):

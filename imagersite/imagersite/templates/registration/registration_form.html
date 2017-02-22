@@ -6,4 +6,6 @@
     {% csrf_token %}
     {% bootstrap_button "Register" button_type="submit" button_class="btn-primary" %}
 </form>
+<!-- <a href="{% url "social:begin" "google-oauth2" %}">Google+</a> -->
+<a href="{% url 'social:begin' 'github' %}">Login with GitHub</a><br>
 {% endblock content %}
