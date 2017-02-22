@@ -87,8 +87,11 @@ def create_group(**kwargs):
         create_permissions(app_config, apps=apps, verbosity=0)
         app_config.models_module = None
     group, created = Group.objects.get_or_create(name='user')
-    imager_content_type = ContentType.objects.get(app_label='imager_profile')
-    permissions = Permission.objects.filter(content_type=imager_content_type)
+    imager_content_types = [x for x in ContentType.objects.filter(app_label='imager_images')]
+    imager_content_types += [x for x in ContentType.objects.filter(app_label='imager_profile')]
+    permissions = []
+    for content_type in imager_content_types:
+        permissions.extend([x for x in Permission.objects.filter(content_type=content_type)])
     if created:
         for permission in permissions:
             group.permissions.add(permission)
