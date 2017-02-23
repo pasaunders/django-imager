@@ -14,6 +14,10 @@ services:
 before_script:
   - psql -c 'create database travis_ci_test;' -U postgres
 
+env:
+  global:
+    secure: "HFGmWW+IYJ6xxRbTzvK0QJHyvZb3jVGaskHZVZnDtOk7mrCOfnrwDEKE0+WD/oxLk3TRmffDiwCa1FdcO5akc7f9v3pHoFY7zMZuJATvB7ol5jT4XFv9kr0lXLy4DVLjASaHJQFmGrahZtzLstna0gsNMiZ74HEp9RziCK3sINNJcCAPsAoqDQythLNiw2j/fQdH5XAtV7GRg6oSr+sAL5ZCiAq7qcJzpN4FHHoiBiCSpo0W+iVvPYWUr8g8jMhAzL1q5U7jEVnoiwO0TBs5j9JtSZ/O/7mjE70DegCiz/0LTUhfK7hdrlZEHitMptD5EeUDKjAR03i6BOiLKWhrVAnGWLWi39nPLxxHhX+wANPN0s0/W2RFkoiiCDLyLQsYg6ExWazvkoCCce2em/mk++kioqdQj6lodRkkq2g0dEice5jUYVhZuz/b/+MLbY+J8S6n2K31W/GOb9dBzvAF1tMbE2rVX8RN7S8m9FNjMTX0mY8XQD5g+4qnseAKE+8vi/k+LhzOt1E82DVJFNNXg14wso7lcCDxsJC6z86p2epJoJqnroJzv6PuV2dftcReebS979OaxoCz7vEDs3PY5hLOcltOGAgD9STEnSYSTic72UBakwBZ6lwIfTe7fJGkFDB4VjVrTakfufeb2CVycvhr7u0v/ZH+y6zxB8z+hOo="
+
 # command to run tests
 script: python imagersite/manage.py test
 
