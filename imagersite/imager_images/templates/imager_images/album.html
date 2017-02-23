@@ -1,0 +1,54 @@
+{% extends 'imagersite/base.html' %}
+{% block content %}
+<h1>Your Album:</h1>
+<div class="galleria" style="height:500px; width: 800px;">
+<img src="{{ cover.image.url }}">
+{% for photo in photos %}
+
+<img id="photo{{ photo.id }}" src="{{ photo.image.url }}" data-title="{{ photo.title }}" data-description="{{ photo.description }}"/>
+
+{% for tag in photo.tags.all %}
+    <a href="{% url "imager_images:tagged_photos" tag.slug %}">{{ tag }}</a>
+{% endfor %}
+
+{% endfor %}
+</div>
+{{ album.description }}
+<ul class="pagination">
+{% if photos.has_previous %}
+  <li><a href="?page={{ photos.previous_page_number }}">&laquo;</a></li>
+{% else %}
+  <li class="disabled"><a href="#">&laquo;</a></li>
+{% endif %}
+
+{% for num in photos.paginator.page_range %}
+  {% ifequal num photos.number %}
+    <li class="active"><a href="#">{{ num }}<span class="sr-only">(current)</span></a></li>
+  {% else %}
+    <li><a href="?page={{ num }}">{{ num }}</a></li>
+  {% endifequal %}
+{% endfor %}
+
+{% if photos.has_next %}
+  <li><a href="?page={{ photos.next_page_number }}">&raquo;</a></li>
+{% else %}
+  <li class="disabled"><a href="#">&raquo;</a></li>
+{% endif %}
+<ul>
+<script>
+(function() {
+{% for photo in album.photos.all %}
+
+var photo{{ photo.id }} = []
+
+$('#photo{{ photo.id }}').attr("data-description", $('#photo{{ photo.id }}').attr("data-description") + " <br>Tags: ")
+{% for tag in photo.tags.all %} 
+    $('#photo{{ photo.id }}').attr("data-description", $('#photo{{ photo.id }}').attr("data-description") + "<a href='{% url "imager_images:tagged_photos" tag.slug %}'> {{ tag }}</a>" )
+{% endfor %}
+
+{% endfor %}
+    Galleria.loadTheme('https://cdnjs.cloudflare.com/ajax/libs/galleria/1.4.5/themes/classic/galleria.classic.min.js');
+    Galleria.run('.galleria');
+}());
+</script>
+{% endblock content %}

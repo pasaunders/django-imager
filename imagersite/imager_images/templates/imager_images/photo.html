@@ -1,0 +1,18 @@
+{% extends 'imagersite/base.html' %}
+{% load thumbnail %}
+{% block content %}
+<h1>Photo</h1>
+<h3>{{ photo.title }}</h3>
+<img src="{{ photo.image.url }}">
+<p>{{ photo.description }}</p>
+{% for photo in tag_match %}
+    <a href="{% url "imager_images:single_photo" photo.id %}">
+    {% thumbnail photo.image "200x200" crop="center" as im %}
+    <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
+    {% endthumbnail %}</a>
+{% for tag in photo.tags.all %}
+    <a href="{% url "imager_images:tagged_photos" tag.slug %}">{{ tag }}</a>
+{% endfor %}
+{% endfor %}
+
+{% endblock content %}

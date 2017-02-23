@@ -1,0 +1,28 @@
+{% extends 'imagersite/base.html' %}
+{% block content %}
+<section>
+<h2>Welcome {{user.username}}!</h2>
+<ul>
+    <li>Name: {{user.first_name|title}} {{user.last_name|title}}</li>
+    <li>Email: <a href="mailto:{{user.email}}">{{user.email}}</a></li>
+    <li>Bio: {{user.profile.bio}}</li>
+    <li>Website: <a href="{{user.profile.personal_website}}">{{user.profile.personal_website}}</a></li>
+    <li>For Hire: {{user.profile.for_hire}}</li>
+    <li>Travel Distance: {{user.profile.travel_distance}} Miles</li>
+    <li>Phone Number: {{user.profile.phone_number}}</li>
+    <li>Photography Type: {{user.profile.photography_type}}</li>
+    <li>Camera: {{user.profile.camera_type}}</li>
+    {% ifequal request.get_full_path '/profile/' %}
+    <li>Location: {{user.profile.address}}</li>
+    <li>Photos Uploaded: {{user.photos.count}}
+    <li>Albums Created: {{user.albums.count}}
+    {% endifequal %}
+</ul>
+{% if user.is_authenticated %}
+<a class="btn" href="{% url 'imager_images:AddPhoto' %}"><button type="button" class="btn btn-primary">Add Photo</button>
+<a class="btn" href="{% url 'imager_images:AddAlbum' %}"><button type="button" class="btn btn-primary">Add Album</button>
+<a class="btn" href="{% url 'edit-profile' %}"><button type="button" class="btn btn-primary">Edit Profile</button>
+</a>
+{% endif %}
+</section>
+{% endblock %}

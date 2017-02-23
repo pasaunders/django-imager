@@ -27,6 +27,7 @@ bin/
 lib64
 pyvenv.cfg
 share/
+pip-selfcheck.json
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
@@ -91,3 +92,7 @@ ENV/
 
 # Rope project settings
 .ropeproject
+
+# Ignore the files in the Media directory, but not the directory itself
+imagersite/MEDIA/*
+!imagersite/MEDIA/.gitkeep
