@@ -16,3 +16,6 @@ before_script:
 
 # command to run tests
 script: python imagersite/manage.py test
+
+notifications:
+  email: false
