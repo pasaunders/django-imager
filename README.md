@@ -1,4 +1,3 @@
-[![Build Status](https://travis-ci.org/pasaunders/django-imager.svg?branch=master)](https://travis-ci.org/pasaunders/django-imager)
 # Django-Imager
 An image display app built in django as a learning project
 
