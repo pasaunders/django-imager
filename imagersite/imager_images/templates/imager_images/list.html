@@ -1,0 +1,17 @@
+{% extends 'imagersite/base.html' %}
+{% block content %}
+{% if tag %}
+<h1>Photos Tagged As {{ tag }}</h1>
+{% endif %}
+<div class="galleria" style="height:500px; width: 800px;">
+    {% for photo in photo_list %}
+    <img src="{{ photo.image.url }}" data-title="{{ photo.title }}" data-description="{{ photo.description }}" />
+    {% endfor %}
+</div>
+<script>
+    (function() { 
+        Galleria.loadTheme('https://cdnjs.cloudflare.com/ajax/libs/galleria/1.4.5/themes/classic/galleria.classic.min.js');
+        Galleria.run('.galleria');
+    }());
+</script>
+{% endblock %}

@@ -1,0 +1,9 @@
+{% extends 'imagersite/base.html' %}
+{% block content %}
+{% load bootstrap3 %}
+<form method="POST">
+    {% bootstrap_form form %}
+    {% csrf_token %}
+    {% bootstrap_button "Register" button_type="submit" button_class="btn-primary" %}
+</form>
+{% endblock content %}
